@@ -1,7 +1,6 @@
 import "mibu/styles/index.scss";
 
-// import AdapterMoment from "@date-io/moment";
-import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import AdapterMoment from "@mui/lab/AdapterMoment";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 // import enLocale from "date-fns/locale/en-US";
 import App from "mibu/components/App";
@@ -17,7 +16,7 @@ ReactDOM.render(
   <React.StrictMode>
     <HelmetProvider>
       <Provider store={store}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <LocalizationProvider dateAdapter={AdapterMoment}>
           <BrowserRouter>
             <App />
           </BrowserRouter>

@@ -1,12 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import {
+  // Avatar,
   Box,
+  Container,
+  Divider,
   Grid,
+  Paper,
+  // Paper,
+  // useTheme,
 } from "@mui/material";
+// import { styled } from "@mui/material/styles";
 import { syncCurrentUserData } from "mibu/actions/user";
 import CompactGlobalFooter from "mibu/components/CompactGlobalFooter";
+// import DummyAvatarImage from "mibu/images/dummy-avatar.png";
 import { currentUserSelector, metadataSelector } from "mibu/reducers/selectors";
+import * as classes from "mibu/styles/classes";
 import { useSnackbar } from "notistack";
 import qs from "qs";
 import React, { useEffect, useState } from "react";
@@ -28,9 +37,16 @@ import SkillSection from "./components/SkillSection";
 import WebLinkSection from "./components/WebLinkSection";
 import WorkExperienceSection from "./components/WorkExperienceSection";
 
+const ProfileSectionDivider = () => (
+  <Box sx={{ marginY: 3 }}>
+    <Divider />
+  </Box>
+);
+
 const UserProfileScreen = () => {
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
+  // const theme = useTheme();
   const meta = useSelector(metadataSelector);
   const user = useSelector(currentUserSelector);
   const [data, setData] = useState(null);
@@ -108,104 +124,120 @@ const UserProfileScreen = () => {
       container
       spacing={3}
     >
+      <ProfileCard
+        countryChoices={meta.countries}
+        editOnMount={editOnMount}
+        enqueueSnackbar={enqueueSnackbar}
+        genderChoices={meta.genders}
+        isEditable={isEditable}
+        syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
+        user={data}
+      />
+
       <Grid
         item
-        md={8}
-        sm={8}
-        xs={12}
+        md={12}
       >
-        <ProfileCard
-          countryChoices={meta.countries}
-          editOnMount={editOnMount}
-          enqueueSnackbar={enqueueSnackbar}
-          genderChoices={meta.genders}
-          isEditable={isEditable}
-          syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
-          user={data}
-        />
+        <Container
+          sx={{
+            ...classes.Container,
+            ...classes.FlexGrow,
+            paddingBottom: 4,
+            paddingTop: 4,
+          }}
+        >
+          <Grid container item md={12} spacing={3}>
+            <Grid
+              item
+              md={8}
+              sm={8}
+              xs={12}
+            >
+              <Paper sx={{ paddingX: 4, paddingY: 4 }}>
+                <WorkExperienceSection
+                  employmentTypeChoices={meta.employment_types}
+                  isEditable={isEditable}
+                  syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
+                  records={workExperiences}
+                />
 
-        <Box />
+                <ProfileSectionDivider />
 
-        <WorkExperienceSection
-          employmentTypeChoices={meta.employment_types}
-          isEditable={isEditable}
-          syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
-          records={workExperiences}
-        />
+                <AcademicRecordSection
+                  isEditable={isEditable}
+                  syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
+                  records={academicRecords}
+                />
 
-        <Box />
+                <ProfileSectionDivider />
 
-        <AcademicRecordSection
-          isEditable={isEditable}
-          syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
-          records={academicRecords}
-        />
+                <SkillSection
+                  isEditable={isEditable}
+                  syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
+                  records={skills}
+                  skillProficiencyLevelChoices={meta.skill_proficiency_levels}
+                />
 
-        <Box />
+                <ProfileSectionDivider />
 
-        <SkillSection
-          isEditable={isEditable}
-          syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
-          records={skills}
-          skillProficiencyLevelChoices={meta.skill_proficiency_levels}
-        />
+                <LanguageSection
+                  isEditable={isEditable}
+                  languageProficiencyLevelChoices={meta.language_proficiency_levels}
+                  syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
+                  records={languages}
+                />
 
-        <Box />
+                <ProfileSectionDivider />
 
-        <LanguageSection
-          isEditable={isEditable}
-          languageProficiencyLevelChoices={meta.language_proficiency_levels}
-          syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
-          records={languages}
-        />
+                <ProjectSection
+                  isEditable={isEditable}
+                  syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
+                  records={projects}
+                />
 
-        <Box />
+                <ProfileSectionDivider />
 
-        <ProjectSection
-          isEditable={isEditable}
-          syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
-          records={projects}
-        />
+                <PublicationSection
+                  isEditable={isEditable}
+                  syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
+                  records={publications}
+                />
 
-        <Box />
+                <ProfileSectionDivider />
 
-        <PublicationSection
-          isEditable={isEditable}
-          syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
-          records={publications}
-        />
+                <HonorOrAwardSection
+                  isEditable={isEditable}
+                  syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
+                  records={honorsOrAwards}
+                />
 
-        <Box />
+                <ProfileSectionDivider />
 
-        <HonorOrAwardSection
-          isEditable={isEditable}
-          syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
-          records={honorsOrAwards}
-        />
+                <CertificationSection
+                  isEditable={isEditable}
+                  syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
+                  records={certifications}
+                />
 
-        <Box />
+                <ProfileSectionDivider />
 
-        <CertificationSection
-          isEditable={isEditable}
-          syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
-          records={certifications}
-        />
-
-        <Box />
-
-        <WebLinkSection
-          isEditable={isEditable}
-          syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
-          records={webLinks}
-        />
-      </Grid>
-      <Grid
-        item
-        md={4}
-        sm={4}
-        xs={12}
-      >
-        <CompactGlobalFooter />
+                <WebLinkSection
+                  isEditable={isEditable}
+                  syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
+                  records={webLinks}
+                />
+              </Paper>
+            </Grid>
+            <Grid
+              item
+              md={4}
+              sm={4}
+              xs={12}
+            >
+              <CompactGlobalFooter />
+            </Grid>
+          </Grid>
+        </Container>
       </Grid>
     </Grid>
   );

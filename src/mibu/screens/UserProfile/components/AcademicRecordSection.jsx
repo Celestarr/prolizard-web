@@ -1,11 +1,7 @@
-import {
-  DatePicker,
-  Timeline,
-  TimelineContent,
-  TimelineItem,
-} from "@mui/lab";
+import { SchoolOutlined as SchoolIcon } from "@mui/icons-material";
 import {
   Alert,
+  Avatar,
   Box,
   Button,
   Checkbox,
@@ -17,6 +13,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import DatePicker from "mibu/components/DatePicker";
 import APIService from "mibu/services/api";
 import isEmpty from "mibu/utils/isEmpty";
 import moment from "moment";
@@ -297,25 +294,16 @@ const AcademicRecordSection = ({
               md={6}
             >
               <DatePicker
-                clearable
-                fullWidth
                 error={!!(touched.startDate && errors.startDate)}
-                format="YYYY-MM-DD"
                 helperText={touched.startDate && errors.startDate ? errors.startDate : null}
                 id="start-date-picker"
-                inputVariant="outlined"
-                KeyboardButtonProps={{
-                  "aria-label": "change start date",
-                }}
                 label="Start Date"
-                margin="normal"
                 onBlur={() => {
                   setFieldTouched("startDate", true);
                 }}
                 onChange={(date) => {
                   setFieldValue("startDate", date);
                 }}
-                placeholder="YYYY-MM-DD"
                 required
                 value={values.startDate}
               />
@@ -325,22 +313,14 @@ const AcademicRecordSection = ({
               md={6}
             >
               <DatePicker
-                clearable
-                fullWidth
                 error={!!(touched.endDate && errors.endDate)}
-                format="YYYY-MM-DD"
                 helperText={(
                   touched.endDate && errors.endDate
                     ? errors.endDate
                     : "or Expected"
                 )}
                 id="end-date-picker"
-                inputVariant="outlined"
-                KeyboardButtonProps={{
-                  "aria-label": "change end date",
-                }}
                 label="End Date"
-                margin="normal"
                 onBlur={() => {
                   setFieldTouched("endDate", true);
                 }}
@@ -350,7 +330,6 @@ const AcademicRecordSection = ({
                     setFieldValue("isOngoing", false);
                   }
                 }}
-                placeholder="YYYY-MM-DD"
                 value={values.endDate}
               />
             </Grid>
@@ -429,79 +408,86 @@ const AcademicRecordSection = ({
         setCurrentRecord,
         setCurrentRemoveRecord,
       }) => (
-        <Timeline>
+        <Grid container spacing={3}>
           {records.map((record) => (
-            <TimelineItem
+            <Grid
+              container
+              item
+              md={12}
+              spacing={2}
               key={record.id}
             >
-              <TimelineContent>
-                <Box
-                  alignItems="center"
-                  display="flex"
-                  flexDirection="row"
+              <Grid item md={1}>
+                <Avatar>
+                  <SchoolIcon />
+                </Avatar>
+              </Grid>
+              <Grid item md>
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: "bold" }}
                 >
-                  <Box flex="1">
-                    <Typography
-                      variant="body1"
-                    >
-                      {record.degree}
-                      {record.field_of_study && (
-                        <>
-                          {`, ${record.field_of_study}`}
-                        </>
-                      )}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                    >
-                      {record.school}
-                    </Typography>
-                    <Typography
-                      color="textSecondary"
-                      variant="body2"
-                    >
-                      {record.location && (
-                        <>
-                          {record.location}
-                          {" ꞏ "}
-                        </>
-                      )}
-                      {moment(record.start_date).format("MMMM YYYY")}
-                      {" — "}
-                      {(record.end_date
-                        ? moment(record.end_date).format("MMMM YYYY")
-                        : "Present"
-                      )}
-                    </Typography>
-                  </Box>
-                  {isEditable && (
-                    <Box ml="auto">
-                      <Button
-                        onClick={() => {
-                          setCurrentRemoveRecord(record);
-                        }}
-                      >
-                        Remove
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setCurrentRecord(record);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                    </Box>
+                  {record.school}
+                </Typography>
+                <Typography variant="body2">
+                  {record.degree}
+                  {record.field_of_study ? (
+                    <>
+                      {", "}
+                      {record.field_of_study}
+                    </>
+                  ) : null}
+                </Typography>
+                <Typography variant="caption">
+                  {moment(record.start_date).format("MMMM YYYY")}
+                  {" — "}
+                  {record.end_date ? moment(record.end_date).format("MMMM YYYY") : "Present"}
+                  {" ("}
+                  {(record.end_date
+                    ? moment(record.start_date).from(record.end_date, true)
+                    : moment(record.start_date).fromNow(true)
                   )}
-                </Box>
+                  {")"}
+                </Typography>
                 {record.description && (
-                  <Box mt={2} whiteSpace="pre-wrap">
+                  <Typography
+                    variant="body1"
+                    sx={{ paddingTop: 2, whiteSpace: "pre-line" }}
+                  >
                     {record.description}
-                  </Box>
+                  </Typography>
                 )}
-              </TimelineContent>
-            </TimelineItem>
+              </Grid>
+              {isEditable && (
+                <Grid container item md="auto" spacing={1}>
+                  <Grid item md>
+                    <Button
+                      onClick={() => {
+                        setCurrentRecord(record);
+                      }}
+                      size="small"
+                      variant="outlined"
+                    >
+                      Edit
+                    </Button>
+                  </Grid>
+                  <Grid item md>
+                    <Button
+                      onClick={() => {
+                        setCurrentRemoveRecord(record);
+                      }}
+                      size="small"
+                      variant="outlined"
+                      color="error"
+                    >
+                      Remove
+                    </Button>
+                  </Grid>
+                </Grid>
+              )}
+            </Grid>
           ))}
-        </Timeline>
+        </Grid>
       )}
     </GenericSection>
   );

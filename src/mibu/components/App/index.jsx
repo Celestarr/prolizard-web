@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import CssBaseline from "@mui/material/CssBaseline";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { bootApp } from "mibu/actions/app";
 import {
@@ -11,17 +11,13 @@ import {
 } from "mibu/reducers/selectors";
 import getRoutes from "mibu/routes";
 import AppSettings from "mibu/settings";
+import themes from "mibu/styles/mui-theme";
 import React, { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
 import {
   useRoutes,
 } from "react-router-dom";
-
-const defaultThemes = {
-  dark: createTheme({ palette: { mode: "dark" } }),
-  light: createTheme({ palette: { mode: "light" } }),
-};
 
 const App = () => {
   const dispatch = useDispatch();
@@ -52,34 +48,7 @@ const App = () => {
   }, [uiMode]);
 
   const theme = useMemo(
-    () => createTheme({
-      palette: {
-        // background: {
-        //   default: "#F6F7F9",
-        // },
-        mode: themeMode,
-      },
-      typography: {
-        fontFamily: "'Roboto', sans-serif",
-      },
-      components: {
-        MuiAlertTitle: {
-          styleOverrides: {
-            root: {
-              marginTop: -2,
-            },
-          },
-        },
-        MuiAppBar: {
-          styleOverrides: {
-            root: {
-              backgroundColor: defaultThemes[themeMode].palette.background.default,
-              color: defaultThemes[themeMode].palette.text.primary,
-            },
-          },
-        },
-      },
-    }),
+    () => themes[themeMode],
     [themeMode],
   );
 

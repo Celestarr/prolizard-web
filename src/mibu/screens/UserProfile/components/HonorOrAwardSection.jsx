@@ -1,10 +1,5 @@
 import {
   Alert,
-  DatePicker, Timeline,
-  TimelineContent,
-  TimelineItem,
-} from "@mui/lab";
-import {
   Box,
   Button,
   Collapse,
@@ -12,6 +7,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import DatePicker from "mibu/components/DatePicker";
 import APIService from "mibu/services/api";
 import isEmpty from "mibu/utils/isEmpty";
 import moment from "moment";
@@ -168,25 +164,16 @@ const HonorOrAwardSection = ({
               md={12}
             >
               <DatePicker
-                clearable
-                fullWidth
                 error={!!(touched.issueDate && errors.issueDate)}
-                format="YYYY-MM-DD"
                 helperText={touched.issueDate && errors.issueDate ? errors.issueDate : null}
                 id="issue-date-picker"
-                inputVariant="outlined"
-                KeyboardButtonProps={{
-                  "aria-label": "change issue date",
-                }}
                 label="Issue Date"
-                margin="normal"
                 onBlur={() => {
                   setFieldTouched("issueDate", true);
                 }}
                 onChange={(date) => {
                   setFieldValue("issueDate", date);
                 }}
-                placeholder="YYYY-MM-DD"
                 value={values.issueDate}
               />
             </Grid>
@@ -229,66 +216,71 @@ const HonorOrAwardSection = ({
         setCurrentRemoveRecord,
         setCurrentRecord,
       }) => (
-        <Timeline>
+        <Grid container spacing={3}>
           {records.map((record) => (
-            <TimelineItem
+            <Grid
+              container
+              item
+              md={12}
+              spacing={2}
               key={record.id}
             >
-              <TimelineContent>
-                <Box
-                  alignItems="center"
-                  display="flex"
-                  flexDirection="row"
+              <Grid item md>
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: "bold" }}
                 >
-                  <Box flex="1">
-                    <Typography
-                      variant="body1"
-                    >
-                      {record.title}
-                    </Typography>
-                    <Typography
-                      color="textSecondary"
-                      variant="body2"
-                    >
-                      Issued by
-                      {" "}
-                      {record.issuer}
-                      {record.issue_date && (
-                        <>
-                          {" ꞏ "}
-                          {moment(record.issue_date).format("YYYY")}
-                        </>
-                      )}
-                    </Typography>
-                  </Box>
-                  {isEditable && (
-                    <Box ml="auto">
-                      <Button
-                        onClick={() => {
-                          setCurrentRemoveRecord(record);
-                        }}
-                      >
-                        Remove
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setCurrentRecord(record);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                    </Box>
-                  )}
-                </Box>
-                {record.description && (
-                  <Box mt={2} whiteSpace="pre-wrap">
-                    {record.description}
-                  </Box>
+                  {record.title}
+                </Typography>
+                <Typography variant="body2">
+                  Issued by
+                  {" "}
+                  {record.issuer}
+                </Typography>
+                {record.issue_date && (
+                  <Typography variant="caption">
+                    {moment(record.issue_date).format("MMMM YYYY")}
+                  </Typography>
                 )}
-              </TimelineContent>
-            </TimelineItem>
+                {record.description && (
+                  <Typography
+                    variant="body1"
+                    sx={{ paddingTop: 2, whiteSpace: "pre-line" }}
+                  >
+                    {record.description}
+                  </Typography>
+                )}
+              </Grid>
+              {isEditable && (
+                <Grid container item md="auto" spacing={1}>
+                  <Grid item md>
+                    <Button
+                      onClick={() => {
+                        setCurrentRecord(record);
+                      }}
+                      size="small"
+                      variant="outlined"
+                    >
+                      Edit
+                    </Button>
+                  </Grid>
+                  <Grid item md>
+                    <Button
+                      onClick={() => {
+                        setCurrentRemoveRecord(record);
+                      }}
+                      size="small"
+                      variant="outlined"
+                      color="error"
+                    >
+                      Remove
+                    </Button>
+                  </Grid>
+                </Grid>
+              )}
+            </Grid>
           ))}
-        </Timeline>
+        </Grid>
       )}
     </GenericSection>
   );

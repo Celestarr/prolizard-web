@@ -1,38 +1,37 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-props-no-spreading */
 
-import {
-  LocationOn,
-} from "@mui/icons-material";
-import {
-  Autocomplete,
-  DatePicker,
-} from "@mui/lab";
+// import { LocationOn } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Alert,
-  AlertTitle,
+  // AlertTitle,
+  Autocomplete,
   Avatar,
   Box,
   Button,
   Collapse,
+  Container,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
   Grid,
-  Paper,
+  // Paper,
   TextField,
   Typography,
+  // Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { saveAs } from "file-saver";
 import { Formik } from "formik";
 import snakeCase from "lodash/snakeCase";
+import DatePicker from "mibu/components/DatePicker";
 import DummyAvatarImage from "mibu/images/dummy-avatar.png";
 import APIService from "mibu/services/api";
+import * as classes from "mibu/styles/classes";
 import isEmpty from "mibu/utils/isEmpty";
 import makeChoiceMap from "mibu/utils/makeChoiceMap";
 import makeLocationString from "mibu/utils/makeLocationString";
@@ -63,10 +62,10 @@ const ProfileCard = ({
 }) => {
   const [initialValues, setInitialValues] = useState(null);
   const [userFullName, setUserFullName] = useState(null);
-  const [userLocation, setUserLocation] = useState(null);
+  const [, setUserLocation] = useState(null);
   const [username, setUserUsername] = useState(null);
-  const [userHeadline, setUserHeadline] = useState(null);
-  const [userAbout, setUserAbout] = useState(null);
+  const [, setUserHeadline] = useState(null);
+  const [, setUserAbout] = useState(null);
   const [isDialogLocked, setIsDialogLocked] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [resumeDownloadProgress, setResumeDownloadProgress] = useState(null);
@@ -229,11 +228,111 @@ const ProfileCard = ({
 
   return (
     <>
-      <Paper>
-        <Box>
+      <Grid
+        item
+        md={12}
+        sx={{
+          backgroundColor: theme.palette.primary[theme.palette.mode],
+          paddingTop: `${theme.spacing(12)} !important`,
+        }}
+      >
+        <Container
+          sx={{
+            ...classes.Container,
+            ...classes.FlexGrow,
+            paddingBottom: 4,
+            paddingTop: 12,
+          }}
+        >
           <Avatar
             src={DummyAvatarImage}
+            sx={{
+              border: 4,
+              borderColor: theme.palette.background.default,
+              bottom: theme.spacing(-6.25),
+              width: theme.spacing(22),
+              height: theme.spacing(22),
+              position: "absolute",
+              zIndex: 1,
+            }}
+            variant="rounded"
           />
+          <Grid container sx={{ paddingLeft: 25 }}>
+            <Grid item md={4}>
+              <Typography variant="h5" component="div">
+                {userFullName}
+              </Typography>
+            </Grid>
+            <Grid item md={8}>
+              <Grid container>
+                <Grid item md={6}>previous</Grid>
+                <Grid item md={6}>education</Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Container>
+      </Grid>
+      <Grid
+        item
+        md={12}
+        sx={{
+          backgroundColor: theme.palette.background.paper,
+          boxShadow: theme.shadows[1],
+          paddingTop: "0px !important",
+        }}
+      >
+        <Container
+          sx={{
+            ...classes.Container,
+            ...classes.FlexGrow,
+            paddingBottom: 2,
+            paddingTop: 2,
+          }}
+        >
+          <Grid
+            container
+            spacing={2}
+            sx={{ paddingLeft: 25 }}
+          >
+            {isEditable && (
+              <Grid item>
+                <Button
+                  color="primary"
+                  onClick={handleEditDialogOpen}
+                  variant="contained"
+                  size="small"
+                >
+                  Edit Profile
+                </Button>
+              </Grid>
+            )}
+            <Grid item>
+              <Button
+                color="primary"
+                href={portfolioUrl}
+                target="_blank"
+                variant={isEditable ? "outlined" : "contained"}
+                size="small"
+              >
+                View portfolio
+              </Button>
+            </Grid>
+            <Grid item>
+              <LoadingButton
+                color="primary"
+                loading={isResumeDownloading}
+                onClick={handleResumeDownloadClick}
+                variant="outlined"
+                size="small"
+              >
+                Download résumé
+              </LoadingButton>
+            </Grid>
+          </Grid>
+        </Container>
+      </Grid>
+      {/* <Paper>
+        <Box>
           <Typography
             variant="h5"
           >
@@ -282,44 +381,8 @@ const ProfileCard = ({
               </Grid>
             </Grid>
           )}
-          <Grid
-            container
-            spacing={2}
-          >
-            {isEditable && (
-              <Grid item>
-                <Button
-                  color="primary"
-                  onClick={handleEditDialogOpen}
-                  variant="contained"
-                >
-                  Edit Profile
-                </Button>
-              </Grid>
-            )}
-            <Grid item>
-              <Button
-                color="primary"
-                href={portfolioUrl}
-                target="_blank"
-                variant={isEditable ? "outlined" : "contained"}
-              >
-                View portfolio
-              </Button>
-            </Grid>
-            <Grid item>
-              <LoadingButton
-                color="primary"
-                loading={isResumeDownloading}
-                onClick={handleResumeDownloadClick}
-                variant="outlined"
-              >
-                Download résumé
-              </LoadingButton>
-            </Grid>
-          </Grid>
         </Box>
-      </Paper>
+      </Paper> */}
 
       <Dialog
         aria-labelledby="edit-profile-dialog"
@@ -341,6 +404,7 @@ const ProfileCard = ({
             handleChange,
             handleSubmit,
             isSubmitting,
+            setFieldTouched,
             setFieldValue,
             touched,
             values,
@@ -478,20 +542,16 @@ const ProfileCard = ({
                     md={6}
                   >
                     <DatePicker
-                      clearable
-                      fullWidth
-                      format="YYYY-MM-DD"
                       id="dob-picker"
-                      inputVariant="outlined"
-                      KeyboardButtonProps={{
-                        "aria-label": "change date of birth",
-                      }}
                       label="Date of Birth"
-                      margin="normal"
+                      error={!!(touched.dob && errors.dob)}
+                      helperText={touched.dob && errors.dob ? errors.dob : null}
+                      onBlur={() => {
+                        setFieldTouched("dob", true);
+                      }}
                       onChange={(date) => {
                         setFieldValue("dob", date);
                       }}
-                      placeholder="YYYY-MM-DD"
                       value={values.dob}
                     />
                   </Grid>

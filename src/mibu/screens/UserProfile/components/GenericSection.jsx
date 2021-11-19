@@ -8,7 +8,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Paper,
   Typography,
   useMediaQuery,
   useTheme,
@@ -166,44 +165,45 @@ const GenericSection = ({
 
   return (
     <>
-      <Paper>
-        <Box>
+      <Box>
+        <Box
+          alignItems="center"
+          display="flex"
+          flexDirection="row"
+          flexWrap="nowrap"
+          sx={{ paddingBottom: 2 }}
+        >
           <Box
-            alignItems="center"
-            display="flex"
-            flexDirection="row"
-            flexWrap="nowrap"
+            flexGrow={1}
           >
-            <Box
-              flexGrow={1}
-            >
-              <Typography variant="h6">
-                {sectionTitle}
-              </Typography>
-            </Box>
-            {isModifiable && (
-              <Box>
-                <Button
-                  color={modifyButtonColor || "default"}
-                  onClick={handleEditDialogOpen}
-                >
-                  {modifyButtonTitle}
-                </Button>
-              </Box>
-            )}
-          </Box>
-          {nothingToShow && (
-            <Typography color="textSecondary" variant="body1">
-              Nothing to show.
+            <Typography color={theme.palette.primary.main} variant="h6">
+              {sectionTitle}
             </Typography>
-          )}
-          {!nothingToShow && (
-            <>
-              {children({ setCurrentRecord, setCurrentRemoveRecord })}
-            </>
+          </Box>
+          {isModifiable && (
+            <Box>
+              <Button
+                color={modifyButtonColor || "default"}
+                variant="contained"
+                size="small"
+                onClick={handleEditDialogOpen}
+              >
+                {modifyButtonTitle}
+              </Button>
+            </Box>
           )}
         </Box>
-      </Paper>
+        {nothingToShow && (
+          <Typography color="textSecondary" variant="body1">
+            Nothing to show.
+          </Typography>
+        )}
+        {!nothingToShow && (
+          <>
+            {children({ setCurrentRecord, setCurrentRemoveRecord })}
+          </>
+        )}
+      </Box>
 
       <Dialog
         aria-describedby="remove-dialog-description"

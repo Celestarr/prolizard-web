@@ -71,10 +71,9 @@ export function DesktopMenu({
       onClose={handleMenuClose}
     >
       <Box pb={2} pt={1} px={2}>
-        <Typography mb={1} variant="subtitle1" component="div">Theme</Typography>
+        <Typography mb={1} variant="subtitle1" component="div">Appearance</Typography>
         <ToggleButtonGroup
           exclusive
-          color="secondary"
           variant="outlined"
           size="small"
           aria-label="ui mode switch group"

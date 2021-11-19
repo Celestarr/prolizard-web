@@ -1,4 +1,4 @@
-import { Box, Container } from "@mui/material";
+// import { Box, Container } from "@mui/material";
 import { signUserOut, syncCurrentUserData } from "mibu/actions/user";
 import {
   currentUserErrorStateSelector,
@@ -7,7 +7,7 @@ import {
   metadataErrorStateSelector,
   metadataLoadingStateSelector,
 } from "mibu/reducers/selectors";
-import * as classes from "mibu/styles/classes";
+// import * as classes from "mibu/styles/classes";
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
@@ -41,17 +41,7 @@ const PrimaryContainer = ({
         onSyncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
         user={user}
       />
-      <Container
-        sx={{
-          ...classes.Container,
-          ...classes.FlexGrow,
-          paddingBottom: 4,
-          paddingTop: 12,
-        }}
-      >
-        <Box />
-        <Outlet />
-      </Container>
+      <Outlet />
     </>
   );
 };

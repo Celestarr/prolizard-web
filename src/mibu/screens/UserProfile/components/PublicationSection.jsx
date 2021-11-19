@@ -1,11 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
+
 import {
   Alert,
-  DatePicker, Timeline,
-  TimelineContent,
-  TimelineItem,
-} from "@mui/lab";
-import {
   Box,
   Button,
   Collapse,
@@ -14,6 +10,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import DatePicker from "mibu/components/DatePicker";
 import APIService from "mibu/services/api";
 import isEmpty from "mibu/utils/isEmpty";
 import moment from "moment";
@@ -201,29 +198,20 @@ const PublicationSection = ({
               md={12}
             >
               <DatePicker
-                clearable
-                fullWidth
                 error={!!(touched.publicationDate && errors.publicationDate)}
-                format="YYYY-MM-DD"
                 helperText={(
                   touched.publicationDate && errors.publicationDate
                     ? errors.publicationDate
                     : null
                   )}
                 id="publication-date-picker"
-                inputVariant="outlined"
-                KeyboardButtonProps={{
-                  "aria-label": "change publication date",
-                }}
                 label="Publication Date"
-                margin="normal"
                 onBlur={() => {
                   setFieldTouched("publicationDate", true);
                 }}
                 onChange={(date) => {
                   setFieldValue("publicationDate", date);
                 }}
-                placeholder="YYYY-MM-DD"
                 value={values.publicationDate}
               />
             </Grid>
@@ -266,76 +254,80 @@ const PublicationSection = ({
         setCurrentRemoveRecord,
         setCurrentRecord,
       }) => (
-        <Timeline>
+        <Grid container spacing={3}>
           {records.map((record) => (
-            <TimelineItem
+            <Grid
+              container
+              item
+              md={12}
+              spacing={2}
               key={record.id}
             >
-              <TimelineContent>
-                <Box
-                  alignItems="center"
-                  display="flex"
-                  flexDirection="row"
+              <Grid item md>
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: "bold" }}
                 >
-                  <Box flex="1">
-                    <Typography
-                      variant="body1"
+                  {record.url ? (
+                    <Link
+                      color="inherit"
+                      href={record.url}
+                      sx={{ textDecoration: "none" }}
+                      target="_blank"
                     >
                       {record.title}
-                    </Typography>
-                    <Typography
-                      color="textSecondary"
-                      variant="body2"
-                    >
-                      Published by
-                      {" "}
-                      {record.publisher}
-                      {record.publication_date && (
-                        <>
-                          {" ꞏ "}
-                          {moment(record.publication_date).format("YYYY")}
-                        </>
-                      )}
-                    </Typography>
-                    {record.url && (
-                      <Link
-                        color="primary"
-                        href={record.url}
-                        target="_blank"
-                        variant="body2"
-                      >
-                        View Publication
-                      </Link>
-                    )}
-                  </Box>
-                  {isEditable && (
-                    <Box ml="auto">
-                      <Button
-                        onClick={() => {
-                          setCurrentRemoveRecord(record);
-                        }}
-                      >
-                        Remove
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setCurrentRecord(record);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                    </Box>
-                  )}
-                </Box>
-                {record.description && (
-                  <Box mt={2} whiteSpace="pre-wrap">
-                    {record.description}
-                  </Box>
+                    </Link>
+                  ) : record.title}
+                </Typography>
+                <Typography variant="body2">
+                  Published by
+                  {" "}
+                  {record.publisher}
+                </Typography>
+                {record.publication_date && (
+                  <Typography variant="caption">
+                    {moment(record.publication_date).format("MMMM YYYY")}
+                  </Typography>
                 )}
-              </TimelineContent>
-            </TimelineItem>
+                {record.description && (
+                  <Typography
+                    variant="body1"
+                    sx={{ paddingTop: 2, whiteSpace: "pre-line" }}
+                  >
+                    {record.description}
+                  </Typography>
+                )}
+              </Grid>
+              {isEditable && (
+                <Grid container item md="auto" spacing={1}>
+                  <Grid item md>
+                    <Button
+                      onClick={() => {
+                        setCurrentRecord(record);
+                      }}
+                      size="small"
+                      variant="outlined"
+                    >
+                      Edit
+                    </Button>
+                  </Grid>
+                  <Grid item md>
+                    <Button
+                      onClick={() => {
+                        setCurrentRemoveRecord(record);
+                      }}
+                      size="small"
+                      variant="outlined"
+                      color="error"
+                    >
+                      Remove
+                    </Button>
+                  </Grid>
+                </Grid>
+              )}
+            </Grid>
           ))}
-        </Timeline>
+        </Grid>
       )}
     </GenericSection>
   );
