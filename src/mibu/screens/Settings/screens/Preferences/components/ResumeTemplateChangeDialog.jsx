@@ -45,7 +45,7 @@ const ResumeTemplateChangeDialog = ({
     <Formik
       enableReinitialize
       initialValues={{
-        template: template.value,
+        template: template.id,
       }}
       onSubmit={onSubmit}
       validationSchema={ValidationSchema}
@@ -94,14 +94,14 @@ const ResumeTemplateChangeDialog = ({
               {templates.map((item) => (
                 <Grid
                   item
-                  key={item.value}
+                  key={item.id}
                   md={3}
                   sm={4}
                 >
                   <Card>
                     <CardActionArea
                       onClick={() => {
-                        setFieldValue("template", item.value);
+                        setFieldValue("template", item.id);
                       }}
                     >
                       <CardContent>

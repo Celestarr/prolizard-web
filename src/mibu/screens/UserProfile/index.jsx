@@ -15,10 +15,10 @@ import { syncCurrentUserData } from "mibu/actions/user";
 import CompactGlobalFooter from "mibu/components/CompactGlobalFooter";
 // import DummyAvatarImage from "mibu/images/dummy-avatar.png";
 import { currentUserSelector, metadataSelector } from "mibu/reducers/selectors";
-import * as classes from "mibu/styles/classes";
 import { useSnackbar } from "notistack";
 import qs from "qs";
 import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
 import {
   useLocation,
@@ -119,11 +119,14 @@ const UserProfileScreen = () => {
     work_experiences: workExperiences,
   } = data;
 
+  const userFullName = `${user.first_name} ${user.last_name}`;
+
   return (
     <Grid
       container
       spacing={3}
     >
+      <Helmet title={userFullName} />
       <ProfileCard
         countryChoices={meta.countries}
         editOnMount={editOnMount}
@@ -140,8 +143,6 @@ const UserProfileScreen = () => {
       >
         <Container
           sx={{
-            ...classes.Container,
-            ...classes.FlexGrow,
             paddingBottom: 4,
             paddingTop: 4,
           }}

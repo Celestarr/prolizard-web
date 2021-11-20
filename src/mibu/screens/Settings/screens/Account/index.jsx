@@ -6,10 +6,13 @@ import {
   ListItemText,
   Paper,
 } from "@mui/material";
+import { syncCurrentUserData } from "mibu/actions/user";
+import { currentUserSelector } from "mibu/reducers/selectors";
 import APIService from "mibu/services/api";
 import makeProfileRoute from "mibu/utils/makeProfileRoute";
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
 
 // import isEmpty from "mibu/utils/isEmpty";
@@ -17,10 +20,9 @@ import EmailChangeDialog from "./components/EmailChangeDialog";
 import PhoneChangeDialog from "./components/PhoneChangeDialog";
 import UsernameChangeDialog from "./components/UsernameChangeDialog";
 
-const View = ({
-  syncCurrentUserData,
-  user,
-}) => {
+const AccountScreen = () => {
+  const user = useSelector(currentUserSelector);
+  const dispatch = useDispatch();
   const [alertBoxMargin, setAlertBoxMargin] = useState(0);
   const [error, setError] = useState({ message: null, show: false });
 
@@ -61,7 +63,7 @@ const View = ({
 
     APIService.User.updateCurrentUserProfile(values)
       .then((res) => {
-        syncCurrentUserData("profile", res);
+        dispatch(syncCurrentUserData("profile", res));
         setSubmitting(false);
         setIsEmailDialogLocked(false);
         setIsEmailDialogOpen(false);
@@ -245,4 +247,4 @@ const View = ({
   );
 };
 
-export default View;
+export default AccountScreen;

@@ -1,4 +1,9 @@
-import { Alert, AlertTitle, Grid } from "@mui/material";
+import {
+  Alert,
+  AlertTitle,
+  Container,
+  Grid,
+} from "@mui/material";
 import CompactGlobalFooter from "mibu/components/CompactGlobalFooter";
 import { currentUserSelector } from "mibu/reducers/selectors";
 import AppSettings from "mibu/settings";
@@ -16,7 +21,12 @@ const FeedScreen = () => {
   }
 
   return (
-    <>
+    <Container
+      sx={{
+        paddingBottom: 4,
+        paddingTop: 16,
+      }}
+    >
       <Helmet title="Feed" />
       <Grid
         container
@@ -55,7 +65,7 @@ const FeedScreen = () => {
           <CompactGlobalFooter />
         </Grid>
       </Grid>
-    </>
+    </Container>
   );
 };
 

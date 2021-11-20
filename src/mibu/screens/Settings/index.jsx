@@ -1,9 +1,11 @@
 import {
+  Container,
   Grid,
   List,
   ListItemText,
   ListSubheader,
   Paper,
+  Typography,
 } from "@mui/material";
 import CompactGlobalFooter from "mibu/components/CompactGlobalFooter";
 import Routes from "mibu/constants/routes";
@@ -20,14 +22,18 @@ import ListItemHelper from "./components/ListItemHelper";
 const SettingsScreen = () => {
   const user = useSelector(currentUserSelector);
   const { pathname } = useLocation();
-  // const navigate = useNavigate();
 
   if (!user) {
     return <div>Loading...</div>;
   }
 
   return (
-    <>
+    <Container
+      sx={{
+        paddingBottom: 4,
+        paddingTop: 16,
+      }}
+    >
       <Grid
         container
         spacing={3}
@@ -41,10 +47,13 @@ const SettingsScreen = () => {
           <Paper>
             <List
               subheader={(
-                <ListSubheader component="div">
-                  Settings
+                <ListSubheader component="div" sx={{ lineHeight: "40px", paddingBottom: 1 }}>
+                  <Typography variant="button">
+                    Settings
+                  </Typography>
                 </ListSubheader>
               )}
+              sx={{ paddingTop: 1 }}
             >
               <ListItemHelper
                 to={Routes.SETTINGS_ACCOUNT}
@@ -64,7 +73,7 @@ const SettingsScreen = () => {
                 />
               </ListItemHelper>
 
-              <ListItemHelper
+              {/* <ListItemHelper
                 to={Routes.SETTINGS_SECURITY}
                 url={pathname}
               >
@@ -89,7 +98,7 @@ const SettingsScreen = () => {
                 <ListItemText
                   primary="Notifications"
                 />
-              </ListItemHelper>
+              </ListItemHelper> */}
             </List>
           </Paper>
         </Grid>
@@ -110,7 +119,7 @@ const SettingsScreen = () => {
           <CompactGlobalFooter />
         </Grid>
       </Grid>
-    </>
+    </Container>
   );
 };
 

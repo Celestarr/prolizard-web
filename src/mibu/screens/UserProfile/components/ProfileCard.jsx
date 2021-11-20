@@ -31,7 +31,6 @@ import snakeCase from "lodash/snakeCase";
 import DatePicker from "mibu/components/DatePicker";
 import DummyAvatarImage from "mibu/images/dummy-avatar.png";
 import APIService from "mibu/services/api";
-import * as classes from "mibu/styles/classes";
 import isEmpty from "mibu/utils/isEmpty";
 import makeChoiceMap from "mibu/utils/makeChoiceMap";
 import makeLocationString from "mibu/utils/makeLocationString";
@@ -238,10 +237,9 @@ const ProfileCard = ({
       >
         <Container
           sx={{
-            ...classes.Container,
-            ...classes.FlexGrow,
             paddingBottom: 4,
             paddingTop: 12,
+            position: "relative",
           }}
         >
           <Avatar
@@ -265,8 +263,8 @@ const ProfileCard = ({
             </Grid>
             <Grid item md={8}>
               <Grid container>
-                <Grid item md={6}>previous</Grid>
-                <Grid item md={6}>education</Grid>
+                <Grid item md={6}>&nbsp;</Grid>
+                <Grid item md={6}>&nbsp;</Grid>
               </Grid>
             </Grid>
           </Grid>
@@ -283,8 +281,6 @@ const ProfileCard = ({
       >
         <Container
           sx={{
-            ...classes.Container,
-            ...classes.FlexGrow,
             paddingBottom: 2,
             paddingTop: 2,
           }}
