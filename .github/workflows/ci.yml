@@ -58,14 +58,15 @@ jobs:
       - name: Install node dependencies
         run: yarn install --frozen-lockfile
       - name: Build
-        run: yarn build
-      - name: Deploy
         env:
           BROWSER: 'none'
           GENERATE_SOURCEMAP: 'false'
           REACT_APP_APP_NAME: 'myfolab'
-          REACT_APP_API_BASE_URL: 'https://api.myfolab.com'
-          REACT_APP_PORTFOLIO_BASE_URL: 'https://portfolio.myfolab.com'
+          REACT_APP_API_BASE_URL: 'http://api.myfolab.com'
+          REACT_APP_PORTFOLIO_BASE_URL: 'http://portfolio.myfolab.com'
+        run: yarn build
+      - name: Deploy
+        env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: yarn netlify deploy --dir=build --prod
