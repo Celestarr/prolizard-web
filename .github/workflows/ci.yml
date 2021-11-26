@@ -62,8 +62,8 @@ jobs:
           BROWSER: 'none'
           GENERATE_SOURCEMAP: 'false'
           REACT_APP_APP_NAME: 'myfolab'
-          REACT_APP_API_BASE_URL: 'http://api.myfolab.com'
-          REACT_APP_PORTFOLIO_BASE_URL: 'http://portfolio.myfolab.com'
+          REACT_APP_API_BASE_URL: 'https://api.myfolab.com'
+          REACT_APP_PORTFOLIO_BASE_URL: 'https://portfolio.myfolab.com'
         run: yarn build
       - name: Deploy
         env:
