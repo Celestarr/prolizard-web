@@ -429,7 +429,7 @@ const WorkExperienceSection = ({
                 </Typography>
                 {record.description && (
                   <Typography
-                    variant="body1"
+                    variant="body2"
                     sx={{ paddingTop: 2, whiteSpace: "pre-line" }}
                   >
                     {record.description}

@@ -31,6 +31,7 @@ import snakeCase from "lodash/snakeCase";
 import DatePicker from "mibu/components/DatePicker";
 import DummyAvatarImage from "mibu/images/dummy-avatar.png";
 import APIService from "mibu/services/api";
+import cssImportantSuffixer from "mibu/utils/cssImportantSuffixer";
 import isEmpty from "mibu/utils/isEmpty";
 import makeChoiceMap from "mibu/utils/makeChoiceMap";
 import makeLocationString from "mibu/utils/makeLocationString";
@@ -232,7 +233,7 @@ const ProfileCard = ({
         md={12}
         sx={{
           backgroundColor: theme.palette.primary[theme.palette.mode],
-          paddingTop: `${theme.spacing(12)} !important`,
+          paddingTop: cssImportantSuffixer(theme.spacing(12)),
         }}
       >
         <Container
@@ -276,7 +277,7 @@ const ProfileCard = ({
         sx={{
           backgroundColor: theme.palette.background.paper,
           boxShadow: theme.shadows[1],
-          paddingTop: "0px !important",
+          paddingTop: cssImportantSuffixer("0px"),
         }}
       >
         <Container

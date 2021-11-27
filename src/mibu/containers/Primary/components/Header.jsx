@@ -76,7 +76,7 @@ const Header = ({
     if (uiMode !== user.preferences.ui_mode) {
       setUIMode(user.preferences.ui_mode);
     }
-  }, [user]);
+  }, [uiMode, user]);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);

@@ -69,7 +69,7 @@ const commonSettings = {
   },
   typography: {
     fontFamily: "'Roboto', sans-serif",
-    fontSize: 13,
+    fontSize: 14,
   },
 };
 
@@ -101,7 +101,7 @@ const themes = {
       MuiAppBar: merge({}, commonSettings.components.MuiAppBar, {
         styleOverrides: {
           root: {
-            backgroundColor: customColors.light.background.default,
+            backgroundColor: customColors.light.background.paper,
             color: defaultThemes.light.palette.text.primary,
           },
         },

@@ -44,7 +44,7 @@ const ProfileSectionDivider = () => (
 );
 
 const UserProfileScreen = () => {
-  const enqueueSnackbar = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
   // const theme = useTheme();
   const meta = useSelector(metadataSelector);

@@ -6,6 +6,7 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import App from "mibu/components/App";
 import store from "mibu/store";
 import reportWebVitals from "mibu/utils/report-web-vitals";
+import { SnackbarProvider } from "notistack";
 import React from "react";
 import ReactDOM from "react-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -15,13 +16,15 @@ import { BrowserRouter } from "react-router-dom";
 ReactDOM.render(
   <React.StrictMode>
     <HelmetProvider>
-      <Provider store={store}>
-        <LocalizationProvider dateAdapter={AdapterMoment}>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </LocalizationProvider>
-      </Provider>
+      <SnackbarProvider>
+        <Provider store={store}>
+          <LocalizationProvider dateAdapter={AdapterMoment}>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </LocalizationProvider>
+        </Provider>
+      </SnackbarProvider>
     </HelmetProvider>
   </React.StrictMode>,
   document.getElementById("root"),
