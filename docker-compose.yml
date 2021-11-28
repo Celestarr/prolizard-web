@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  mibu:
+    build:
+      context: .
+      dockerfile: ./dev/docker/mibu/Dockerfile
+    container_name: myfo__mibu
+    volumes:
+      - ./public:/mibu/public:ro
+      - ./src:/mibu/src:ro
+      - ./.env:/mibu/.env:ro
+      - ./.eslintignore:/mibu/.eslintignore:ro
+      - ./.eslintrc.js:/mibu/.eslintrc.js:ro
+      - ./.yarnrc:/mibu/.yarnrc:ro
+      - ./jsconfig.json:/mibu/jsconfig.json:ro
+      - ./package.json:/mibu/package.json:ro
+      - ./yarn.lock:/mibu/yarn.lock
+
+  nginx:
+    build: ./dev/docker/nginx
+    container_name: myfo__mibu__nginx
+    ports:
+      - '0.0.0.0:8000:80'
+    depends_on:
+      - mibu

@@ -1,39 +1,31 @@
-# CVHouse Web
+# mibu
 
-Primary web interface for cvhouse.
-
-**Production**: [https://cvhouse.netlify.app/](https://cvhouse.netlify.app/) (Branch: _master_)
-
-**Development**: [https://mfl-web-dev.netlify.app/](https://mfl-web-dev.netlify.app/) (Branch: _dev_)
+Primary web ui for myfo - [app.myfolab.com](https://app.myfolab.com/)
 
 ## Getting started
 
 - Make sure you have following tools installed:
-  - [Node.js](https://nodejs.org/en/download/) (12.16+)
-  - [Yarn](https://yarnpkg.com/lang/en/docs/install/)
+  - [Docker Engine](https://docs.docker.com/engine/install/) (19.03.0+)
+  - [docker-compose](https://docs.docker.com/compose/install/)
 
-- Clone the repo:
-  ```python
-  git clone https://github.com/cvhouse/cvhouse-web.git
-  
-  # or with ssh
-  
-  git clone git@github.com:cvhouse/cvhouse-web.git
-  ```
+- Clone the repo
 
 - Create a _.env_ off the sample file provided:
-  ```
-  cp .env.sample .env
-  ```
+```bash
+cp .env.sample .env
+```
 
-- Install project requirements:
-  ```
-  yarn install
-  ```
+- Add an entry to your hosts file (`/etc/hosts`) to mimic cookie domain, like this:
+```bash
+127.0.0.1       localhost
+127.0.0.1       local.myfolab.com  #  <-- this
 
-- Run the project:
-  ```
-  yarn start
-  ```
+... other entries
+```
 
-Now head over to [http://localhost:3000](http://localhost:3000) in your browser.
+- Run the project with docker compose:
+```bash
+docker-compose up
+```
+
+Now head over to [local.myfolab.com:8000](http://local.myfolab.com:8000/) in your browser.
