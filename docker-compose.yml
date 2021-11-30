@@ -7,6 +7,7 @@ services:
       dockerfile: ./dev/docker/mibu/Dockerfile
     container_name: myfo__mibu
     volumes:
+      - ./node_modules:/mibu/node_modules
       - ./public:/mibu/public:ro
       - ./src:/mibu/src:ro
       - ./.env:/mibu/.env:ro

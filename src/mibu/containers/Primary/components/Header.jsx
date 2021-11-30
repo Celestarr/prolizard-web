@@ -9,7 +9,7 @@ import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
 import InputBase from "@mui/material/InputBase";
 import Link from "@mui/material/Link";
-import { alpha, styled } from "@mui/material/styles";
+import { darken, styled } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import classNames from "classnames";
@@ -21,12 +21,25 @@ import { Link as RouterLink } from "react-router-dom";
 import Avatar from "./Avatar";
 import { DesktopMenu, MobileMenu } from "./Menus";
 
+const SEARCH_BG_COEFF = {
+  dark: 0.10,
+  light: 0.08,
+};
+
+const SEARCH_BG_HOVER_COEFF = {
+  dark: 0.20,
+  light: 0.05,
+};
+
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  backgroundColor: darken(theme.palette.background.paper, SEARCH_BG_COEFF[theme.palette.mode]),
   "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
+    backgroundColor: darken(
+      theme.palette.background.paper,
+      SEARCH_BG_HOVER_COEFF[theme.palette.mode],
+    ),
   },
   marginRight: theme.spacing(2),
   marginLeft: 0,

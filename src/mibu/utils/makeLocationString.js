@@ -1,6 +1,6 @@
 import isEmpty from "./isEmpty";
 
-const makeLocationString = (address, country) => {
+export default function makeLocationString(address, country) {
   const isAddressEmpty = isEmpty(address);
   const isCountryEmpty = isEmpty(country);
 
@@ -17,6 +17,4 @@ const makeLocationString = (address, country) => {
   }
 
   return null;
-};
-
-export default makeLocationString;
+}

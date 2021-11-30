@@ -8,7 +8,7 @@ import {
 } from "@mui/icons-material";
 import {
   Box,
-  Divider,
+  // Divider,
   IconButton,
   ListItemIcon,
   ListItemText,
@@ -110,7 +110,7 @@ export function DesktopMenu({
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
-      <Divider sx={{ marginBottom: 1 }} />
+      {/* <Divider sx={{ marginBottom: 1 }} /> */}
       <MenuItem
         onClick={wrapHandleMyProfileClick(navigate, username, setAnchorEl, handleMobileMenuClose)}
       >

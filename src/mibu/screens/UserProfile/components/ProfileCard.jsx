@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-props-no-spreading */
 
-// import { LocationOn } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Alert,
@@ -16,12 +15,12 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   FormControl,
   Grid,
-  // Paper,
+  Paper,
   TextField,
   Typography,
-  // Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -32,9 +31,12 @@ import DatePicker from "mibu/components/DatePicker";
 import DummyAvatarImage from "mibu/images/dummy-avatar.png";
 import APIService from "mibu/services/api";
 import cssImportantSuffixer from "mibu/utils/cssImportantSuffixer";
+import getHighestEducationObject from "mibu/utils/getHighestEducationObject";
+import getPreviousExperienceObject from "mibu/utils/getPreviousExperienceObject";
 import isEmpty from "mibu/utils/isEmpty";
 import makeChoiceMap from "mibu/utils/makeChoiceMap";
 import makeLocationString from "mibu/utils/makeLocationString";
+import makeUserHeadline from "mibu/utils/makeUserHeadline";
 import transformObject from "mibu/utils/transformObject";
 import moment from "moment";
 import React, {
@@ -62,9 +64,11 @@ const ProfileCard = ({
 }) => {
   const [initialValues, setInitialValues] = useState(null);
   const [userFullName, setUserFullName] = useState(null);
-  const [, setUserLocation] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
   const [username, setUserUsername] = useState(null);
-  const [, setUserHeadline] = useState(null);
+  const [userHeadline, setUserHeadline] = useState(null);
+  const [userPreviousExperience, setUserPreviousExperience] = useState(null);
+  const [userEducationHighlight, setUserEducationHighlight] = useState(null);
   const [, setUserAbout] = useState(null);
   const [isDialogLocked, setIsDialogLocked] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -76,34 +80,23 @@ const ProfileCard = ({
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
-    const {
-      about,
-      address,
-      country,
-      date_of_birth: dob,
-      first_name: firstName,
-      gender,
-      headline,
-      last_name: lastName,
-      username: currentUsername,
-    } = user;
-
     setInitialValues({
-      about: about || "",
-      address: address || "",
-      country: country ? country.id : null,
-      dob: dob ? moment(dob) : null,
-      firstName,
-      gender: gender ? gender.id : null,
-      headline: headline || "",
-      lastName,
+      about: user.about || "",
+      address: user.address || "",
+      country: user.country ? user.country.id : null,
+      dob: user.dob ? moment(user.dob) : null,
+      firstName: user.first_name,
+      gender: user.gender ? user.gender.id : null,
+      lastName: user.last_name,
     });
 
-    setUserUsername(currentUsername);
-    setUserAbout(about);
-    setUserFullName(`${firstName} ${lastName}`);
-    setUserLocation(makeLocationString(address, country ? country.label : null));
-    setUserHeadline(headline);
+    setUserUsername(user.username);
+    setUserAbout(user.about);
+    setUserFullName(`${user.first_name} ${user.last_name}`);
+    setUserLocation(makeLocationString(user.address, user.country ? user.country.label : null));
+    setUserHeadline(makeUserHeadline(user));
+    setUserPreviousExperience(getPreviousExperienceObject(user.work_experiences));
+    setUserEducationHighlight(getHighestEducationObject(user.academic_records));
   }, [user]);
 
   const countryChoiceValues = countryChoices.map((x) => x.id);
@@ -163,7 +156,6 @@ const ProfileCard = ({
       "country",
       "firstName",
       "gender",
-      "headline",
       "lastName",
     ].forEach((fieldName) => {
       const snaked = snakeCase(fieldName);
@@ -239,7 +231,7 @@ const ProfileCard = ({
         <Container
           sx={{
             paddingBottom: 4,
-            paddingTop: 12,
+            paddingTop: 6,
             position: "relative",
           }}
         >
@@ -257,16 +249,72 @@ const ProfileCard = ({
             variant="rounded"
           />
           <Grid container sx={{ paddingLeft: 25 }}>
-            <Grid item md={4}>
-              <Typography variant="h5" component="div">
+            <Grid
+              item
+              md={4}
+              sx={{
+                color: theme.palette.primary.contrastText,
+              }}
+            >
+              <Typography variant="h6" component="div">
                 {userFullName}
               </Typography>
+
+              {userHeadline && (
+                <Typography variant="body1" component="div">
+                  {userHeadline}
+                </Typography>
+              )}
+
+              {userLocation && (
+                <Typography variant="subtitle2" component="div">
+                  {userLocation}
+                </Typography>
+              )}
             </Grid>
             <Grid item md={8}>
-              <Grid container>
-                <Grid item md={6}>&nbsp;</Grid>
-                <Grid item md={6}>&nbsp;</Grid>
-              </Grid>
+              <Paper sx={{ paddingX: 2, paddingY: 1 }}>
+                <Grid container>
+                  <Grid item md={5}>
+                    <Typography variant="subtitle2" component="div" color="primary">
+                      Previous
+                    </Typography>
+                    <Typography variant="body1" component="div">
+                      {userPreviousExperience && (
+                        `${userPreviousExperience.job_title} at ${userPreviousExperience.company}`
+                      )}
+                      {!userPreviousExperience && "-"}
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    alignItems="center"
+                    container
+                    item
+                    justifyContent="center"
+                    md={2}
+                  >
+                    <Divider
+                      orientation="vertical"
+                      sx={{
+                        borderColor: theme.palette.primary[theme.palette.mode],
+                        borderWidth: 1,
+                        height: "60%",
+                      }}
+                    />
+                  </Grid>
+                  <Grid item md={5}>
+                    <Typography variant="subtitle2" component="div" color="primary">
+                      Education
+                    </Typography>
+                    <Typography variant="body1" component="div">
+                      {userEducationHighlight && (
+                        `${userEducationHighlight.degree} from ${userEducationHighlight.school}`
+                      )}
+                      {!userEducationHighlight && "-"}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Paper>
             </Grid>
           </Grid>
         </Container>
@@ -328,58 +376,6 @@ const ProfileCard = ({
           </Grid>
         </Container>
       </Grid>
-      {/* <Paper>
-        <Box>
-          <Typography
-            variant="h5"
-          >
-            {userFullName}
-          </Typography>
-
-          {userHeadline && (
-            <Typography variant="body1">
-              {userHeadline}
-            </Typography>
-          )}
-
-          {userLocation && (
-            <Box
-              alignItems="center"
-              display="flex"
-              flexDirection="row"
-              mt={0.5}
-            >
-              <LocationOn
-                color="disabled"
-                fontSize="inherit"
-              />
-              <Typography
-                color="textSecondary"
-                component="span"
-                variant="body2"
-              >
-                {userLocation}
-              </Typography>
-            </Box>
-          )}
-          {userAbout && (
-            <Grid
-              container
-              spacing={2}
-            >
-              <Grid item xs={12}>
-                <Alert
-                  severity="info"
-                  variant="outlined"
-                >
-                  <AlertTitle>Professional Summary</AlertTitle>
-                  {userAbout}
-                </Alert>
-              </Grid>
-            </Grid>
-          )}
-        </Box>
-      </Paper> */}
 
       <Dialog
         aria-labelledby="edit-profile-dialog"
@@ -471,32 +467,6 @@ const ProfileCard = ({
                         onChange: handleChange,
                       }}
                       helperText={touched.lastName && errors.lastName ? errors.lastName : null}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid
-                  container
-                  spacing={4}
-                >
-                  <Grid
-                    item
-                    md={12}
-                  >
-                    <TextField
-                      variant="outlined"
-                      margin="normal"
-                      fullWidth
-                      id="headline"
-                      label="Headline"
-                      name="headline"
-                      autoComplete="off"
-                      value={values.headline}
-                      error={!!(touched.headline && errors.headline)}
-                      InputProps={{
-                        onBlur: handleBlur,
-                        onChange: handleChange,
-                      }}
-                      helperText={touched.headline && errors.headline ? errors.headline : null}
                     />
                   </Grid>
                 </Grid>

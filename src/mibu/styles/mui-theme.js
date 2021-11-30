@@ -6,7 +6,7 @@ import merge from "lodash/merge";
 
 const PRIMARY = primaryColor[700];
 const PRIMARY_DARK = primaryColor[800];
-const PRIMARY_LIGHT = primaryColor.A200;
+const PRIMARY_LIGHT = primaryColor[600];
 
 const customColors = {
   dark: {

@@ -183,26 +183,24 @@ const SkillSection = ({
         setCurrentRemoveRecord,
         setCurrentRecord,
       }) => (
-        <Box
-          display="flex"
-          flexWrap="wrap"
-          ml={-1}
-          mr={-1}
-          mt={2}
+        <Grid
+          container
+          spacing={1}
         >
           {records.map((record) => (
-            <Chip
-              key={record.id}
-              label={record.name}
-              onClick={() => {
-                setCurrentRecord(record);
-              }}
-              onDelete={() => {
-                setCurrentRemoveRecord(record);
-              }}
-            />
+            <Grid key={record.id} item>
+              <Chip
+                label={record.name}
+                onClick={() => {
+                  setCurrentRecord(record);
+                }}
+                onDelete={() => {
+                  setCurrentRemoveRecord(record);
+                }}
+              />
+            </Grid>
           ))}
-        </Box>
+        </Grid>
       )}
     </GenericSection>
   );
