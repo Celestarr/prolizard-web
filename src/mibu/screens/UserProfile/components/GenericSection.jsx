@@ -171,7 +171,7 @@ const GenericSection = ({
           display="flex"
           flexDirection="row"
           flexWrap="nowrap"
-          sx={{ paddingBottom: 2 }}
+          sx={{ paddingBottom: 3 }}
         >
           <Box
             flexGrow={1}

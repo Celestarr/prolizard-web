@@ -1,17 +1,17 @@
+/* eslint-disable react/no-array-index-key */
+
 import {
-  Alert,
-  AlertTitle,
   Container,
   Grid,
+  Paper,
 } from "@mui/material";
 import CompactGlobalFooter from "mibu/components/CompactGlobalFooter";
 import { currentUserSelector } from "mibu/reducers/selectors";
-import AppSettings from "mibu/settings";
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useSelector } from "react-redux";
 
-import ProfileCard from "./components/ProfileCard";
+import OverviewCard from "./components/OverviewCard";
 
 const FeedScreen = () => {
   const user = useSelector(currentUserSelector);
@@ -21,51 +21,71 @@ const FeedScreen = () => {
   }
 
   return (
-    <Container
-      sx={{
-        paddingBottom: 4,
-        paddingTop: 16,
-      }}
+    <Grid
+      container
+      spacing={3}
     >
       <Helmet title="Feed" />
+
+      <OverviewCard />
+
       <Grid
-        container
-        spacing={3}
+        item
+        md={12}
       >
-        <Grid
-          item
-          md={3}
-          sm={3}
-          xs={12}
+        <Container
+          sx={{
+            paddingBottom: 4,
+            paddingTop: 4,
+          }}
         >
-          <ProfileCard
-            user={user}
-          />
-        </Grid>
-        <Grid
-          item
-          md={6}
-          sm={6}
-          xs={12}
-        >
-          <Alert severity="info">
-            <AlertTitle>Hello</AlertTitle>
-            Welcome to
-            {" "}
-            {AppSettings.APP_NAME}
-            {". "}
-          </Alert>
-        </Grid>
-        <Grid
-          item
-          md={3}
-          sm={3}
-          xs={12}
-        >
-          <CompactGlobalFooter />
-        </Grid>
+          <Grid container spacing={6}>
+            <Grid
+              item
+              md={8}
+              sm={8}
+              xs={12}
+              sx={{
+                position: "relative",
+              }}
+            >
+              <Grid
+                container
+                spacing={4}
+                sx={{
+                  paddingBottom: 4,
+                  position: "absolute",
+                  top: -164,
+                  left: 0,
+                  right: 0,
+                }}
+              >
+                {(new Array(10).fill(0)).map((item, idx) => (
+                  <Grid item key={`${item}-${idx}`} md={12}>
+                    <Paper
+                      sx={{
+                        paddingX: 4,
+                        paddingY: 4,
+                      }}
+                    >
+                      Feed post
+                    </Paper>
+                  </Grid>
+                ))}
+              </Grid>
+            </Grid>
+            <Grid
+              item
+              md={4}
+              sm={4}
+              xs={12}
+            >
+              <CompactGlobalFooter />
+            </Grid>
+          </Grid>
+        </Container>
       </Grid>
-    </Container>
+    </Grid>
   );
 };
 

@@ -147,7 +147,7 @@ const UserProfileScreen = () => {
             paddingTop: 4,
           }}
         >
-          <Grid container item md={12} spacing={6}>
+          <Grid container spacing={6}>
             <Grid
               item
               md={8}

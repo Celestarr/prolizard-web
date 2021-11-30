@@ -411,80 +411,82 @@ const AcademicRecordSection = ({
         <Grid container spacing={3}>
           {records.map((record) => (
             <Grid
-              container
               item
               md={12}
-              spacing={2}
               key={record.id}
             >
-              <Grid item md={1}>
-                <Avatar>
-                  <SchoolIcon />
-                </Avatar>
-              </Grid>
-              <Grid item md>
-                <Typography
-                  variant="body1"
-                  sx={{ fontWeight: "bold" }}
-                >
-                  {record.school}
-                </Typography>
-                <Typography variant="body2">
-                  {record.degree}
-                  {record.field_of_study ? (
-                    <>
-                      {", "}
-                      {record.field_of_study}
-                    </>
-                  ) : null}
-                </Typography>
-                <Typography variant="caption">
-                  {moment(record.start_date).format("MMMM YYYY")}
-                  {" — "}
-                  {record.end_date ? moment(record.end_date).format("MMMM YYYY") : "Present"}
-                  {" ("}
-                  {(record.end_date
-                    ? moment(record.start_date).from(record.end_date, true)
-                    : moment(record.start_date).fromNow(true)
-                  )}
-                  {")"}
-                </Typography>
-                {record.description && (
+              <Grid container spacing={2}>
+                <Grid item md={1}>
+                  <Avatar>
+                    <SchoolIcon />
+                  </Avatar>
+                </Grid>
+                <Grid item md>
                   <Typography
                     variant="body1"
-                    sx={{ paddingTop: 2, whiteSpace: "pre-line" }}
+                    sx={{ fontWeight: "bold" }}
                   >
-                    {record.description}
+                    {record.school}
                   </Typography>
+                  <Typography variant="body2">
+                    {record.degree}
+                    {record.field_of_study ? (
+                      <>
+                        {", "}
+                        {record.field_of_study}
+                      </>
+                    ) : null}
+                  </Typography>
+                  <Typography variant="caption">
+                    {moment(record.start_date).format("MMMM YYYY")}
+                    {" — "}
+                    {record.end_date ? moment(record.end_date).format("MMMM YYYY") : "Present"}
+                    {" ("}
+                    {(record.end_date
+                      ? moment(record.start_date).from(record.end_date, true)
+                      : moment(record.start_date).fromNow(true)
+                    )}
+                    {")"}
+                  </Typography>
+                  {record.description && (
+                    <Typography
+                      variant="body1"
+                      sx={{ paddingTop: 2, whiteSpace: "pre-line" }}
+                    >
+                      {record.description}
+                    </Typography>
+                  )}
+                </Grid>
+                {isEditable && (
+                  <Grid item md="auto">
+                    <Grid container spacing={1}>
+                      <Grid item md>
+                        <Button
+                          onClick={() => {
+                            setCurrentRecord(record);
+                          }}
+                          size="small"
+                          variant="outlined"
+                        >
+                          Edit
+                        </Button>
+                      </Grid>
+                      <Grid item md>
+                        <Button
+                          onClick={() => {
+                            setCurrentRemoveRecord(record);
+                          }}
+                          size="small"
+                          variant="outlined"
+                          color="error"
+                        >
+                          Remove
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Grid>
                 )}
               </Grid>
-              {isEditable && (
-                <Grid container item md="auto" spacing={1}>
-                  <Grid item md>
-                    <Button
-                      onClick={() => {
-                        setCurrentRecord(record);
-                      }}
-                      size="small"
-                      variant="outlined"
-                    >
-                      Edit
-                    </Button>
-                  </Grid>
-                  <Grid item md>
-                    <Button
-                      onClick={() => {
-                        setCurrentRemoveRecord(record);
-                      }}
-                      size="small"
-                      variant="outlined"
-                      color="error"
-                    >
-                      Remove
-                    </Button>
-                  </Grid>
-                </Grid>
-              )}
             </Grid>
           ))}
         </Grid>

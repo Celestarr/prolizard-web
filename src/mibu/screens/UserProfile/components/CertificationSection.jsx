@@ -221,65 +221,67 @@ const CertificationSection = ({
         <Grid container spacing={3}>
           {records.map((record) => (
             <Grid
-              container
               item
               md={12}
-              spacing={2}
               key={record.id}
             >
-              <Grid item md>
-                <Typography
-                  variant="body1"
-                  sx={{ fontWeight: "bold" }}
-                >
-                  {record.title}
-                </Typography>
-                <Typography variant="body2">
-                  Offered by
-                  {" "}
-                  {record.issuer}
-                </Typography>
-                {record.issue_date && (
-                  <Typography variant="caption">
-                    {moment(record.issue_date).format("MMMM YYYY")}
-                  </Typography>
-                )}
-                {record.description && (
+              <Grid container spacing={2}>
+                <Grid item md>
                   <Typography
                     variant="body1"
-                    sx={{ paddingTop: 2, whiteSpace: "pre-line" }}
+                    sx={{ fontWeight: "bold" }}
                   >
-                    {record.description}
+                    {record.title}
                   </Typography>
+                  <Typography variant="body2">
+                    Offered by
+                    {" "}
+                    {record.issuer}
+                  </Typography>
+                  {record.issue_date && (
+                    <Typography variant="caption">
+                      {moment(record.issue_date).format("MMMM YYYY")}
+                    </Typography>
+                  )}
+                  {record.description && (
+                    <Typography
+                      variant="body1"
+                      sx={{ paddingTop: 2, whiteSpace: "pre-line" }}
+                    >
+                      {record.description}
+                    </Typography>
+                  )}
+                </Grid>
+                {isEditable && (
+                  <Grid item md="auto">
+                    <Grid container spacing={1}>
+                      <Grid item md>
+                        <Button
+                          onClick={() => {
+                            setCurrentRecord(record);
+                          }}
+                          size="small"
+                          variant="outlined"
+                        >
+                          Edit
+                        </Button>
+                      </Grid>
+                      <Grid item md>
+                        <Button
+                          onClick={() => {
+                            setCurrentRemoveRecord(record);
+                          }}
+                          size="small"
+                          variant="outlined"
+                          color="error"
+                        >
+                          Remove
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Grid>
                 )}
               </Grid>
-              {isEditable && (
-                <Grid container item md="auto" spacing={1}>
-                  <Grid item md>
-                    <Button
-                      onClick={() => {
-                        setCurrentRecord(record);
-                      }}
-                      size="small"
-                      variant="outlined"
-                    >
-                      Edit
-                    </Button>
-                  </Grid>
-                  <Grid item md>
-                    <Button
-                      onClick={() => {
-                        setCurrentRemoveRecord(record);
-                      }}
-                      size="small"
-                      variant="outlined"
-                      color="error"
-                    >
-                      Remove
-                    </Button>
-                  </Grid>
-                </Grid>
-              )}
             </Grid>
           ))}
         </Grid>

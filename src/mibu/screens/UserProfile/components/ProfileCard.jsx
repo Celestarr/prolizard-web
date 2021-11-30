@@ -292,6 +292,7 @@ const ProfileCard = ({
                     item
                     justifyContent="center"
                     md={2}
+                    spacing={0}
                   >
                     <Divider
                       orientation="vertical"
