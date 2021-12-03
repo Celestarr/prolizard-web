@@ -1,6 +1,6 @@
 {
   "name": "@myfolab/mibu",
-  "version": "0.0.1-pre4",
+  "version": "0.0.1-pre5",
   "private": true,
   "engines": {
     "node": ">=14.18"

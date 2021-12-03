@@ -54,7 +54,7 @@ class BaseAPIService {
         },
         xsrfCookieName: "csrftoken",
         xsrfHeaderName: "X-CSRFToken",
-        withCredentials: true,
+        // withCredentials: true,
       });
 
       BaseAPIService.registerInterceptors(BaseAPIService._axios);
