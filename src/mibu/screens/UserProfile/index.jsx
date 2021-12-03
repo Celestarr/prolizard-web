@@ -13,6 +13,7 @@ import {
 // import { styled } from "@mui/material/styles";
 import { syncCurrentUserData } from "mibu/actions/user";
 import CompactGlobalFooter from "mibu/components/CompactGlobalFooter";
+import GlobalSpinner from "mibu/components/GlobalSpinner";
 // import DummyAvatarImage from "mibu/images/dummy-avatar.png";
 import { currentUserSelector, metadataSelector } from "mibu/reducers/selectors";
 import { useSnackbar } from "notistack";
@@ -99,11 +100,7 @@ const UserProfileScreen = () => {
   }, [location, user, username]);
 
   if (isLoading || !data) {
-    return (
-      <Box>
-        Loading...
-      </Box>
-    );
+    return <GlobalSpinner />;
   }
 
   // User info

@@ -1,20 +1,29 @@
 import BaseAPIService from "./base";
 
 class UserAPIService extends BaseAPIService {
-  retrieveUserResume = async (username, setProgress) => this.request(
-    "get",
-    `/store/member-resume/${username}/`,
-    {
-      responseType: "blob",
-      onDownloadProgress: (progressEvent) => {
-        if (setProgress) {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          setProgress(percentCompleted);
-        }
+  retrieveUserResume = async (username, setProgress) => {
+    const { download_url: downloadUrl } = await this.request(
+      "get",
+      `/store/member-resume/${username}/`,
+    );
+
+    return this.request(
+      "get",
+      downloadUrl,
+      {
+        responseType: "blob",
+        onDownloadProgress: (progressEvent) => {
+          if (setProgress) {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total,
+            );
+            setProgress(percentCompleted);
+          }
+        },
+        timeout: 0,
       },
-      timeout: 0,
-    },
-  )
+    );
+  }
 
   retrieveMetadata = async () => this.request("get", "/meta/")
 

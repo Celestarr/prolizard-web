@@ -6,6 +6,7 @@ import {
   Paper,
 } from "@mui/material";
 import CompactGlobalFooter from "mibu/components/CompactGlobalFooter";
+import GlobalSpinner from "mibu/components/GlobalSpinner";
 import { currentUserSelector } from "mibu/reducers/selectors";
 import React from "react";
 import { Helmet } from "react-helmet-async";
@@ -17,7 +18,7 @@ const FeedScreen = () => {
   const user = useSelector(currentUserSelector);
 
   if (!user) {
-    return <div>Loading...</div>;
+    return <GlobalSpinner />;
   }
 
   return (

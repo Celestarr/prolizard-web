@@ -1,3 +1,4 @@
+import GlobalSpinner from "mibu/components/GlobalSpinner";
 import Routes from "mibu/constants/routes";
 import AuthContainer from "mibu/containers/Auth";
 import PrimaryContainer from "mibu/containers/Primary";
@@ -15,7 +16,7 @@ const SignUpScreen = React.lazy(() => import("mibu/screens/SignUp"));
 const UserProfileScreen = React.lazy(() => import("mibu/screens/UserProfile"));
 
 const wrapLazyElement = (Element) => (
-  <React.Suspense fallback={<div>Loading...</div>}>
+  <React.Suspense fallback={<GlobalSpinner />}>
     <Element />
   </React.Suspense>
 );

@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import CompactGlobalFooter from "mibu/components/CompactGlobalFooter";
+import GlobalSpinner from "mibu/components/GlobalSpinner";
 import Routes from "mibu/constants/routes";
 import { currentUserSelector } from "mibu/reducers/selectors";
 import React from "react";
@@ -24,7 +25,7 @@ const SettingsScreen = () => {
   const { pathname } = useLocation();
 
   if (!user) {
-    return <div>Loading...</div>;
+    return <GlobalSpinner />;
   }
 
   return (

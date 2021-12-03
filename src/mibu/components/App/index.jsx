@@ -4,6 +4,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { bootApp } from "mibu/actions/app";
+import GlobalSpinner from "mibu/components/GlobalSpinner";
 import {
   appBootStateSelector,
   currentUserSelector,
@@ -57,7 +58,13 @@ const App = () => {
   }, []);
 
   if (!booted) {
-    return <div>Loading...</div>;
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+
+        <GlobalSpinner />
+      </ThemeProvider>
+    );
   }
 
   return (
