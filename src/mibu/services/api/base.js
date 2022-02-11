@@ -54,7 +54,7 @@ class BaseAPIService {
         },
         xsrfCookieName: "csrftoken",
         xsrfHeaderName: "X-CSRFToken",
-        withCredentials: true,
+        // withCredentials: true,
       });
 
       BaseAPIService.registerInterceptors(BaseAPIService._axios);
@@ -63,9 +63,22 @@ class BaseAPIService {
 
   static registerInterceptors($axios) {
     $axios.interceptors.request.use((config) => {
+      const extraHeaders = {};
+
+      const isExternalUrl = config.url.startsWith("http://") || config.url.startsWith("https://");
+
+      if (!isExternalUrl) {
+        const accessToken = localStorage.getItem("oauth2:access_token");
+
+        if (accessToken) {
+          extraHeaders.Authorization = `Bearer ${accessToken}`;
+        }
+      }
+
       // eslint-disable-next-line no-param-reassign
       config.headers = {
         ...config.headers,
+        ...extraHeaders,
       };
 
       return config;

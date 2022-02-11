@@ -207,7 +207,7 @@ export const onSignOutUserSuccess = () => ({
 export const signUserOut = (callbacks) => (dispatch) => {
   dispatch(onSignOutUserRequest());
 
-  APIService.Auth.signOut()
+  APIService.OAuth2.revokeAuthToken()
     .then((res) => {
       dispatch(onSignOutUserSuccess());
 

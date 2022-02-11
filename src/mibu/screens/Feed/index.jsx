@@ -57,8 +57,9 @@ const FeedScreen = () => {
                   paddingBottom: 4,
                   position: "absolute",
                   top: -164,
-                  left: 0,
+                  left: 48,
                   right: 0,
+                  width: "calc(100% - 16px)",
                 }}
               >
                 {(new Array(10).fill(0)).map((item, idx) => (

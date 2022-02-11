@@ -5,14 +5,16 @@ import PrimaryContainer from "mibu/containers/Primary";
 import React from "react";
 import { Navigate } from "react-router-dom";
 
+const AuthCallbackScreen = React.lazy(() => import("mibu/screens/AuthCallback"));
+const AuthorizeScreen = React.lazy(() => import("mibu/screens/Authorize"));
 const FeedScreen = React.lazy(() => import("mibu/screens/Feed"));
 const SettingsScreen = React.lazy(() => import("mibu/screens/Settings"));
 const PreferenceSettingsScreen = React.lazy(
   () => import("mibu/screens/Settings/screens/Preferences"),
 );
 const AccountSettingsScreen = React.lazy(() => import("mibu/screens/Settings/screens/Account"));
-const SignInScreen = React.lazy(() => import("mibu/screens/SignIn"));
-const SignUpScreen = React.lazy(() => import("mibu/screens/SignUp"));
+// const SignInScreen = React.lazy(() => import("mibu/screens/SignIn"));
+// const SignUpScreen = React.lazy(() => import("mibu/screens/SignUp"));
 const UserProfileScreen = React.lazy(() => import("mibu/screens/UserProfile"));
 
 const wrapLazyElement = (Element) => (
@@ -47,8 +49,9 @@ export default function getRoutes(isLoggedIn) {
       path: "/",
       element: !isLoggedIn ? <AuthContainer /> : <Navigate to={Routes.HOME} />,
       children: [
-        { path: Routes.SIGN_IN, element: wrapLazyElement(SignInScreen) },
-        { path: Routes.SIGN_UP, element: wrapLazyElement(SignUpScreen) },
+        { path: Routes.AUTH_CALLBACK, element: wrapLazyElement(AuthCallbackScreen) },
+        { path: Routes.SIGN_IN, element: wrapLazyElement(AuthorizeScreen) },
+        // { path: Routes.SIGN_UP, element: wrapLazyElement(SignUpScreen) },
       ],
     },
   ]);

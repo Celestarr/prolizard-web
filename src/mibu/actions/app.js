@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import APIService from "mibu/services/api";
 
 import {
@@ -35,25 +36,31 @@ const onAppBoot = () => ({
 });
 
 export const bootApp = () => (dispatch) => {
-  dispatch(onRetrieveUserDataRequest("me"));
+  const accessToken = localStorage.getItem("oauth2:access_token");
 
-  APIService.User.retrieveUserProfile("me")
-    .then((res) => {
-      dispatch(onRetrieveUserDataSuccess("me", res));
-      dispatch(onRetrieveMetadataRequest());
+  if (accessToken) {
+    dispatch(onRetrieveUserDataRequest("me"));
 
-      return APIService.Common.retrieveMetadata();
-    }, (err) => {
-      dispatch(onRetrieveUserDataFailure("me", err));
-    })
-    .then((res) => {
-      dispatch(onRetrieveMetadataSuccess(res));
-    }, (err) => {
-      dispatch(onRetrieveMetadataFailure(err));
-    })
-    .finally(() => {
-      dispatch(onAppBoot());
-    });
+    APIService.User.retrieveUserProfile("me")
+      .then((res) => {
+        dispatch(onRetrieveUserDataSuccess("me", res));
+        dispatch(onRetrieveMetadataRequest());
+
+        return APIService.Common.retrieveMetadata();
+      }, (err) => {
+        dispatch(onRetrieveUserDataFailure("me", err));
+      })
+      .then((res) => {
+        dispatch(onRetrieveMetadataSuccess(res));
+      }, (err) => {
+        dispatch(onRetrieveMetadataFailure(err));
+      })
+      .finally(() => {
+        dispatch(onAppBoot());
+      });
+  } else {
+    dispatch(onAppBoot());
+  }
 
   //   dispatch(retrieveUserProfile("me", {
   //   onSuccess: () => {

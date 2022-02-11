@@ -1,4 +1,5 @@
 const Routes = {
+  AUTH_CALLBACK: "/auth-callback",
   FORGOT_PASSWORD: "/forgot-password",
   HOME: "/",
   PROFILE: "/profile",
