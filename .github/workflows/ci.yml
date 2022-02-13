@@ -3,17 +3,17 @@ name: ci
 on:
   push:
     branches:
-      - "master"
+      - master
   pull_request:
     branches:
-      - "master"
+      - master
   release:
     types:
       - created
 
 jobs:
   test:
-    if: github.event_name != "release"
+    if: github.event_name != 'release'
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -21,14 +21,13 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "16.12.0"
+          node-version: '16.12.0'
       - name: Install node dependencies
         run: yarn install --frozen-lockfile
       # - name: Test
       #   run: make test
-
   release:
-    if: github.event_name == "push" && contains(github.ref, "refs/heads/master")
+    if: github.event_name == 'push' && contains(github.ref, 'refs/heads/master')
     needs: test
     runs-on: ubuntu-20.04
     steps:
@@ -37,16 +36,15 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "16.12.0"
+          node-version: '16.12.0'
       - name: Install node dependencies
         run: yarn install --frozen-lockfile
       - name: Create release
         env:
           GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
         run: node scripts/gh-release.js
-
   deploy:
-    if: github.event_name == "release"
+    if: github.event_name == 'release'
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -54,23 +52,23 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "16.12.0"
+          node-version: '16.12.0'
       - name: Install node dependencies
         run: yarn install --frozen-lockfile
       - name: Build
         env:
-          BROWSER: "none"
-          GENERATE_SOURCEMAP: "false"
-          REACT_APP_APP_NAME: "myfolab"
-          REACT_APP_API_BASE_URL: "https://core.myfo.app/api"
-          REACT_APP_PORTFOLIO_BASE_URL: "https://portfolio.myfolab.com"
-          REACT_APP_OAUTH_BASE_URL: "https://core.myfo.app/identity/oauth2"
-          REACT_APP_OAUTH_CLIENT_ID: "web"
+          BROWSER: 'none'
+          GENERATE_SOURCEMAP: 'false'
+          REACT_APP_APP_NAME: 'myfolab'
+          REACT_APP_API_BASE_URL: 'https://core.myfo.app/api'
+          REACT_APP_PORTFOLIO_BASE_URL: 'https://portfolio.myfolab.com'
+          REACT_APP_OAUTH_BASE_URL: 'https://core.myfo.app/identity/oauth2'
+          REACT_APP_OAUTH_CLIENT_ID: 'web'
         run: yarn build
       - name: Deploy
         env:
-          AWS_S3_BUCKET_NAME: "web.myfo.app"
+          AWS_S3_BUCKET_NAME: 'web.myfo.app'
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-        run: aws s3 sync --delete build/ "s3://AWS_S3_BUCKET_NAME"
+        run: aws s3 sync --delete build/ 's3://AWS_S3_BUCKET_NAME'
