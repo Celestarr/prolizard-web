@@ -1,6 +1,6 @@
 {
-  "name": "@myfolab/mibu",
-  "version": "0.0.1-pre7",
+  "name": "@myfo/mibu",
+  "version": "0.1.0-pre1",
   "private": true,
   "engines": {
     "node": ">=14.18"
@@ -60,7 +60,6 @@
   "devDependencies": {
     "eslint-config-airbnb": "^18.2.1",
     "eslint-plugin-simple-import-sort": "^7.0.0",
-    "netlify-cli": "^6.14.16",
     "node-sass": "^6.0.1",
     "serve": "^13.0.2"
   }

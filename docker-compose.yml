@@ -4,7 +4,7 @@ services:
   mibu:
     build:
       context: .
-      dockerfile: ./dev/docker/mibu/Dockerfile
+      dockerfile: ./docker/mibu/Dockerfile
     container_name: myfo__mibu
     volumes:
       - ./node_modules:/mibu/node_modules
@@ -19,11 +19,3 @@ services:
       - ./yarn.lock:/mibu/yarn.lock
     ports:
       - '0.0.0.0:3000:3000'
-
-  # nginx:
-  #   build: ./dev/docker/nginx
-  #   container_name: myfo__mibu__nginx
-  #   ports:
-  #     - '0.0.0.0:8000:80'
-  #   depends_on:
-  #     - mibu
