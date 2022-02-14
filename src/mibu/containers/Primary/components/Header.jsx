@@ -15,6 +15,7 @@ import Typography from "@mui/material/Typography";
 import classNames from "classnames";
 import AppLogo from "mibu/images/myfolab-icon-310x310.png";
 import APIService from "mibu/services/api";
+import AppSettings from "mibu/settings";
 import React, { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -147,6 +148,10 @@ const Header = ({
       onError: () => {
         setIsSigningOut(false);
       },
+      onSuccess: () => {
+        window.location.href = new URL("logout/", `${AppSettings.IDENTITY_BASE_URL}/`).href;
+      },
+      noDispatchOnSuccess: true,
     });
   };
 

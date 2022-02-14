@@ -204,22 +204,24 @@ export const onSignOutUserSuccess = () => ({
   type: SIGN_OUT_USER_SUCCEEDED,
 });
 
-export const signUserOut = (callbacks) => (dispatch) => {
+export const signUserOut = (opts) => (dispatch) => {
   dispatch(onSignOutUserRequest());
 
   APIService.OAuth2.revokeAuthToken()
     .then((res) => {
-      dispatch(onSignOutUserSuccess());
+      if (!opts.noDispatchOnSuccess) {
+        dispatch(onSignOutUserSuccess());
+      }
 
-      if (callbacks && callbacks.onSuccess) {
-        callbacks.onSuccess(res);
+      if (opts && opts.onSuccess) {
+        opts.onSuccess(res);
       }
     })
     .catch((err) => {
       dispatch(onSignOutUserFailure(err));
 
-      if (callbacks && callbacks.onError) {
-        callbacks.onError(err);
+      if (opts && opts.onError) {
+        opts.onError(err);
       }
     });
 };

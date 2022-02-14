@@ -10,7 +10,7 @@ const Routes = {
   SETTINGS_PREFERENCES: "/settings/preferences",
   SETTINGS_PRIVACY: "/settings/privacy",
   SETTINGS_SECURITY: "/settings/security",
-  SIGN_IN: "/sign-in",
+  LOGIN: "/login",
   SIGN_UP: "/sign-up",
   USER_PROFILE: "/profile/:username",
 };

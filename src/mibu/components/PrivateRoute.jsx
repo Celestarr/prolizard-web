@@ -18,7 +18,7 @@ const PrivateRoute = (props) => {
     }
     return <Route path={path} component={component} exact={exact} />;
   }
-  return <Redirect to={routes.SIGN_IN} />;
+  return <Redirect to={routes.LOGIN} />;
 };
 
 export default PrivateRoute;

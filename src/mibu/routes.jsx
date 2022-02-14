@@ -27,7 +27,7 @@ export default function getRoutes(isLoggedIn) {
   return ([
     {
       path: "/",
-      element: isLoggedIn ? <PrimaryContainer /> : <Navigate to={Routes.SIGN_IN} />,
+      element: isLoggedIn ? <PrimaryContainer /> : <Navigate to={Routes.LOGIN} />,
       children: [
         { path: Routes.HOME, element: wrapLazyElement(FeedScreen) },
         {
@@ -50,7 +50,7 @@ export default function getRoutes(isLoggedIn) {
       element: !isLoggedIn ? <AuthContainer /> : <Navigate to={Routes.HOME} />,
       children: [
         { path: Routes.AUTH_CALLBACK, element: wrapLazyElement(AuthCallbackScreen) },
-        { path: Routes.SIGN_IN, element: wrapLazyElement(AuthorizeScreen) },
+        { path: Routes.LOGIN, element: wrapLazyElement(AuthorizeScreen) },
         // { path: Routes.SIGN_UP, element: wrapLazyElement(SignUpScreen) },
       ],
     },

@@ -338,7 +338,7 @@ const SignUpScreen = () => {
                 <Link
                   variant="body2"
                   component={RouterLink}
-                  to={routes.SIGN_IN}
+                  to={routes.LOGIN}
                 >
                   Sign in
                 </Link>
