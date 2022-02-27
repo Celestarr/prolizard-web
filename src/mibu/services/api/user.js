@@ -4,7 +4,7 @@ class UserAPIService extends BaseAPIService {
   retrieveUserResume = async (username, setProgress) => {
     const { download_url: downloadUrl } = await this.request(
       "get",
-      `/store/member-resume/${username}/`,
+      `/storage/resume/${username}/`,
     );
 
     return this.request(
@@ -25,168 +25,166 @@ class UserAPIService extends BaseAPIService {
     );
   }
 
-  retrieveMetadata = async () => this.request("get", "/meta/")
+  retrieveUserProfile = async (username) => this.request("get", `/profile/${username}/`)
 
-  retrieveUserProfile = async (username) => this.request("get", `/members/${username}/`)
-
-  updateCurrentUserProfile = async (payload) => this.request("patch", "/members/me/", payload)
+  updateCurrentUserProfile = async (payload) => this.request("patch", "/profile/me/", payload)
 
   updateCurrentUserPreferences = async (payload) => this.request(
     "patch",
-    "/members/preferences/",
+    "/profile/preferences/",
     payload,
   )
 
   createAcademicRecord = async (payload) => this.request(
     "post",
-    "/members/profile-sections/academic-records/",
+    "/profile/sections/academic-records/",
     payload,
   )
 
   deleteAcademicRecord = async (id) => this.request(
     "delete",
-    `/members/profile-sections/academic-records/${id}/`,
+    `/profile/sections/academic-records/${id}/`,
   )
 
   updateAcademicRecord = async (id, payload) => this.request(
     "patch",
-    `/members/profile-sections/academic-records/${id}/`,
+    `/profile/sections/academic-records/${id}/`,
     payload,
   )
 
   createCertification = async (payload) => this.request(
     "post",
-    "/members/profile-sections/certifications/",
+    "/profile/sections/certifications/",
     payload,
   )
 
   deleteCertification = async (id) => this.request(
     "delete",
-    `/members/profile-sections/certifications/${id}/`,
+    `/profile/sections/certifications/${id}/`,
   )
 
   updateCertification = async (id, payload) => this.request(
     "patch",
-    `/members/profile-sections/certifications/${id}/`,
+    `/profile/sections/certifications/${id}/`,
     payload,
   )
 
   createHonorOrAward = async (payload) => this.request(
     "post",
-    "/members/profile-sections/honors-or-awards/",
+    "/profile/sections/honors-or-awards/",
     payload,
   )
 
   deleteHonorOrAward = async (id) => this.request(
     "delete",
-    `/members/profile-sections/honors-or-awards/${id}/`,
+    `/profile/sections/honors-or-awards/${id}/`,
   )
 
   updateHonorOrAward = async (id, payload) => this.request(
     "patch",
-    `/members/profile-sections/honors-or-awards/${id}/`,
+    `/profile/sections/honors-or-awards/${id}/`,
     payload,
   )
 
   createLanguage = async (payload) => this.request(
     "post",
-    "/members/profile-sections/languages/",
+    "/profile/sections/languages/",
     payload,
   )
 
   deleteLanguage = async (id) => this.request(
     "delete",
-    `/members/profile-sections/languages/${id}/`,
+    `/profile/sections/languages/${id}/`,
   )
 
   updateLanguage = async (id, payload) => this.request(
     "patch",
-    `/members/profile-sections/languages/${id}/`,
+    `/profile/sections/languages/${id}/`,
     payload,
   )
 
   createProject = async (payload) => this.request(
     "post",
-    "/members/profile-sections/projects/",
+    "/profile/sections/projects/",
     payload,
   )
 
   deleteProject = async (id) => this.request(
     "delete",
-    `/members/profile-sections/projects/${id}/`,
+    `/profile/sections/projects/${id}/`,
   )
 
   updateProject = async (id, payload) => this.request(
     "patch",
-    `/members/profile-sections/projects/${id}/`,
+    `/profile/sections/projects/${id}/`,
     payload,
   )
 
   createPublication = async (payload) => this.request(
     "post",
-    "/members/profile-sections/publications/",
+    "/profile/sections/publications/",
     payload,
   )
 
   deletePublication = async (id) => this.request(
     "delete",
-    `/members/profile-sections/publications/${id}/`,
+    `/profile/sections/publications/${id}/`,
   )
 
   updatePublication = async (id, payload) => this.request(
     "patch",
-    `/members/profile-sections/publications/${id}/`,
+    `/profile/sections/publications/${id}/`,
     payload,
   )
 
   createSkill = async (payload) => this.request(
     "post",
-    "/members/profile-sections/skills/",
+    "/profile/sections/skills/",
     payload,
   )
 
   deleteSkill = async (id) => this.request(
     "delete",
-    `/members/profile-sections/skills/${id}/`,
+    `/profile/sections/skills/${id}/`,
   )
 
   updateSkill = async (id, payload) => this.request(
     "patch",
-    `/members/profile-sections/skills/${id}/`,
+    `/profile/sections/skills/${id}/`,
     payload,
   )
 
   createWebLink = async (payload) => this.request(
     "post",
-    "/members/profile-sections/web-links/",
+    "/profile/sections/web-links/",
     payload,
   )
 
   deleteWebLink = async (id) => this.request(
     "delete",
-    `/members/profile-sections/web-links/${id}/`,
+    `/profile/sections/web-links/${id}/`,
   )
 
   updateWebLink = async (id, payload) => this.request(
     "patch",
-    `/members/profile-sections/web-links/${id}/`,
+    `/profile/sections/web-links/${id}/`,
     payload,
   )
 
   createWorkExperience = async (payload) => this.request(
     "post",
-    "/members/profile-sections/work-experiences/",
+    "/profile/sections/work-experiences/",
     payload,
   )
 
   deleteWorkExperience = async (id) => this.request(
     "delete",
-    `/members/profile-sections/work-experiences/${id}/`,
+    `/profile/sections/work-experiences/${id}/`,
   )
 
   updateWorkExperience = async (id, payload) => this.request(
     "patch",
-    `/members/profile-sections/work-experiences/${id}/`,
+    `/profile/sections/work-experiences/${id}/`,
     payload,
   )
 }

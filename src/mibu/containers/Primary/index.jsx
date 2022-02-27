@@ -4,8 +4,6 @@ import {
   currentUserErrorStateSelector,
   currentUserLoadingStateSelector,
   currentUserSelector,
-  metadataErrorStateSelector,
-  metadataLoadingStateSelector,
 } from "mibu/reducers/selectors";
 // import * as classes from "mibu/styles/classes";
 import React from "react";
@@ -19,17 +17,15 @@ const PrimaryContainer = ({
   pageTitle,
 }) => {
   const dispatch = useDispatch();
-  const metaError = useSelector(metadataErrorStateSelector);
-  const metaLoading = useSelector(metadataLoadingStateSelector);
   const user = useSelector(currentUserSelector);
   const userError = useSelector(currentUserErrorStateSelector);
   const userLoading = useSelector(currentUserLoadingStateSelector);
 
-  if (userLoading || metaLoading) {
+  if (userLoading) {
     return null;
   }
 
-  if (userError || metaError) {
+  if (userError) {
     return "Error occurred.";
   }
 

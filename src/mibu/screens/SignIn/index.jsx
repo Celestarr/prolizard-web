@@ -19,7 +19,6 @@ import {
   Typography,
 } from "@mui/material";
 import { Formik } from "formik";
-import { onRetrieveMetadataSuccess } from "mibu/actions/meta";
 import { onRetrieveUserDataSuccess } from "mibu/actions/user";
 import routes from "mibu/constants/routes";
 import APIService from "mibu/services/api";
@@ -55,7 +54,6 @@ const SignInScreen = () => {
       ]);
 
       dispatch(onRetrieveUserDataSuccess("me", data[0]));
-      dispatch(onRetrieveMetadataSuccess(data[1]));
       // setSubmitting(false);
     } catch (err) {
       setError({ message: err.message, show: true });

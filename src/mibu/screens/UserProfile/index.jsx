@@ -15,7 +15,7 @@ import { syncCurrentUserData } from "mibu/actions/user";
 import CompactGlobalFooter from "mibu/components/CompactGlobalFooter";
 import GlobalSpinner from "mibu/components/GlobalSpinner";
 // import DummyAvatarImage from "mibu/images/dummy-avatar.png";
-import { currentUserSelector, metadataSelector } from "mibu/reducers/selectors";
+import { currentUserSelector } from "mibu/reducers/selectors";
 import { useSnackbar } from "notistack";
 import qs from "qs";
 import React, { useEffect, useState } from "react";
@@ -48,7 +48,6 @@ const UserProfileScreen = () => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
   // const theme = useTheme();
-  const meta = useSelector(metadataSelector);
   const user = useSelector(currentUserSelector);
   const [data, setData] = useState(null);
   const [isEditable, setIsEditable] = useState(false);
@@ -125,10 +124,10 @@ const UserProfileScreen = () => {
     >
       <Helmet title={userFullName} />
       <ProfileCard
-        countryChoices={meta.countries}
+        countryChoices={[]}
         editOnMount={editOnMount}
         enqueueSnackbar={enqueueSnackbar}
-        genderChoices={meta.genders}
+        genderChoices={[]}
         isEditable={isEditable}
         syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
         user={data}
@@ -153,7 +152,7 @@ const UserProfileScreen = () => {
             >
               <Paper sx={{ paddingX: 4, paddingY: 4 }}>
                 <WorkExperienceSection
-                  employmentTypeChoices={meta.employment_types}
+                  employmentTypeChoices={[]}
                   isEditable={isEditable}
                   syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
                   records={workExperiences}
@@ -173,14 +172,14 @@ const UserProfileScreen = () => {
                   isEditable={isEditable}
                   syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
                   records={skills}
-                  skillProficiencyLevelChoices={meta.skill_proficiency_levels}
+                  skillProficiencyLevelChoices={[]}
                 />
 
                 <ProfileSectionDivider />
 
                 <LanguageSection
                   isEditable={isEditable}
-                  languageProficiencyLevelChoices={meta.language_proficiency_levels}
+                  languageProficiencyLevelChoices={[]}
                   syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
                   records={languages}
                 />

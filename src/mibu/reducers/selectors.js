@@ -7,24 +7,6 @@ export const appBootStateSelector = (state) => getPropertyValue(
   false,
 );
 
-export const metadataSelector = (state) => getPropertyValue(
-  state,
-  "meta.data",
-  null,
-);
-
-export const metadataErrorStateSelector = (state) => getPropertyValue(
-  state,
-  "meta.error",
-  null,
-);
-
-export const metadataLoadingStateSelector = (state) => getPropertyValue(
-  state,
-  "meta.loading",
-  false,
-);
-
 export const currentUserSelector = (state) => getPropertyValue(state, "users.me.data", null);
 
 export const currentUserErrorStateSelector = (state) => getPropertyValue(
@@ -47,6 +29,5 @@ export const signInStateSelector = createSelector(
 export default {
   appBootStateSelector,
   currentUserSelector,
-  metadataSelector,
   signInStateSelector,
 };

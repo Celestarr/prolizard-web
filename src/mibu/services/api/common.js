@@ -1,7 +1,5 @@
 import BaseAPIService from "./base";
 
-class CommonAPIService extends BaseAPIService {
-  retrieveMetadata = async () => this.request("get", "/meta/")
-}
+class CommonAPIService extends BaseAPIService {}
 
 export default CommonAPIService;

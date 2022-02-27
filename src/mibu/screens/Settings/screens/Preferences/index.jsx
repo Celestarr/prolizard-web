@@ -7,7 +7,7 @@ import {
   Paper,
 } from "@mui/material";
 import { syncCurrentUserData } from "mibu/actions/user";
-import { currentUserSelector, metadataSelector } from "mibu/reducers/selectors";
+import { currentUserSelector } from "mibu/reducers/selectors";
 import APIService from "mibu/services/api";
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
@@ -17,7 +17,6 @@ import ResumeTemplateChangeDialog from "./components/ResumeTemplateChangeDialog"
 
 const PreferencesScreen = () => {
   const user = useSelector(currentUserSelector);
-  const metadata = useSelector(metadataSelector);
   const dispatch = useDispatch();
   const [resumeTemplateAlertBoxMargin, setResumeTemplateAlertBoxMargin] = useState(0);
   const [resumeTemplateDialogError, setResumeTemplateDialogError] = useState({
@@ -82,7 +81,7 @@ const PreferencesScreen = () => {
         onClose={handleResumeTemplateDialogClose}
         onSubmit={handleResumeTemplateSubmit}
         template={preferences.resume_template}
-        templates={metadata.resume_templates}
+        templates={[]}
       />
 
       <Paper>

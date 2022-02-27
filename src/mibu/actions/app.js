@@ -2,11 +2,6 @@
 import APIService from "mibu/services/api";
 
 import {
-  onRetrieveMetadataFailure,
-  onRetrieveMetadataRequest,
-  onRetrieveMetadataSuccess,
-} from "./meta";
-import {
   onRetrieveUserDataFailure,
   onRetrieveUserDataRequest,
   onRetrieveUserDataSuccess,
@@ -44,16 +39,8 @@ export const bootApp = () => (dispatch) => {
     APIService.User.retrieveUserProfile("me")
       .then((res) => {
         dispatch(onRetrieveUserDataSuccess("me", res));
-        dispatch(onRetrieveMetadataRequest());
-
-        return APIService.Common.retrieveMetadata();
       }, (err) => {
         dispatch(onRetrieveUserDataFailure("me", err));
-      })
-      .then((res) => {
-        dispatch(onRetrieveMetadataSuccess(res));
-      }, (err) => {
-        dispatch(onRetrieveMetadataFailure(err));
       })
       .finally(() => {
         dispatch(onAppBoot());
@@ -61,17 +48,4 @@ export const bootApp = () => (dispatch) => {
   } else {
     dispatch(onAppBoot());
   }
-
-  //   dispatch(retrieveUserProfile("me", {
-  //   onSuccess: () => {
-  //     dispatch(retrieveMetadata({
-  //       onCompletion: () => {
-  //         dispatch(makeAppBootstrapped());
-  //       },
-  //     }));
-  //   },
-  //   onError: () => {
-  //     dispatch(makeAppBootstrapped());
-  //   },
-  // }));
 };
