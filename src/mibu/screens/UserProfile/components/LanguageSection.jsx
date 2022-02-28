@@ -2,17 +2,16 @@
 
 import {
   Alert,
-  Autocomplete,
   Box,
   Chip,
   Collapse,
   FormControl,
   Grid,
   TextField,
+  useTheme,
 } from "@mui/material";
+import AsyncAutocomplete from "mibu/components/AsyncAutocomplete";
 import APIService from "mibu/services/api";
-import makeChoiceMap from "mibu/utils/makeChoiceMap";
-import moment from "moment";
 import React from "react";
 import * as Yup from "yup";
 
@@ -20,7 +19,7 @@ import GenericSection from "./GenericSection";
 
 const Schema = Yup.object({
   name: Yup.string().required("Language name is required"),
-  proficiency: Yup.string().required("Proficiency level is required"),
+  proficiency: Yup.number().required("Proficiency level is required"),
 });
 
 const defaultInitialValues = {
@@ -30,17 +29,11 @@ const defaultInitialValues = {
 
 const LanguageSection = ({
   isEditable,
-  languageProficiencyLevelChoices,
   syncCurrentUserData,
   records,
 }) => {
   const nothingToShow = !records.length;
-  const languageProficiencyLevelChoiceValues = languageProficiencyLevelChoices.map((x) => x.id);
-  const languageProficiencyLevelChoiceValueLabelMap = makeChoiceMap(
-    languageProficiencyLevelChoices,
-    "id",
-    "name",
-  );
+  const theme = useTheme();
 
   const transformPayload = (values) => {
     const payload = {
@@ -68,10 +61,8 @@ const LanguageSection = ({
       getFormInitialValues={(addMode, currentRecord) => (
         addMode ? defaultInitialValues
           : ({
-            description: currentRecord.description || "",
-            issueDate: currentRecord.issue_date ? moment(currentRecord.issue_date) : null,
-            issuer: currentRecord.issuer,
-            title: currentRecord.title,
+            name: currentRecord.name,
+            proficiency: currentRecord.proficiency.id,
           })
       )}
       formContent={({
@@ -144,13 +135,17 @@ const LanguageSection = ({
                 fullWidth
                 margin="normal"
               >
-                <Autocomplete
+                <AsyncAutocomplete
+                  fetchOptions={APIService.Common.retrieveLanguageProficiencyLevels}
+                  error={!!(touched.proficiency && errors.proficiency)}
                   fullWidth
-                  id="proficiency-combo-box"
-                  options={languageProficiencyLevelChoiceValues}
-                  getOptionLabel={(option) => (
-                    languageProficiencyLevelChoiceValueLabelMap[option]
+                  helperText={(
+                    touched.proficiency && errors.proficiency
+                      ? errors.proficiency
+                      : null
                   )}
+                  inputId="proficiency-combo-box"
+                  label="Proficiency"
                   // onBlur={(event) => {
                   //   const { value } = event.target;
                   //   if (languageProficiencyLevelChoiceLabels.includes(value)) {
@@ -160,20 +155,7 @@ const LanguageSection = ({
                   onChange={(_, value) => {
                     setFieldValue("proficiency", value);
                   }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      error={!!(touched.proficiency && errors.proficiency)}
-                      helperText={(
-                        touched.proficiency && errors.proficiency
-                          ? errors.proficiency
-                          : null
-                      )}
-                      label="Proficiency"
-                      required
-                      variant="outlined"
-                    />
-                  )}
+                  required
                   value={values.proficiency}
                 />
               </FormControl>
@@ -199,6 +181,10 @@ const LanguageSection = ({
               label={record.name}
               onClick={() => {
                 setCurrentRecord(record);
+              }}
+              sx={{
+                marginLeft: theme.spacing(1),
+                marginRight: theme.spacing(1),
               }}
               onDelete={() => {
                 setCurrentRemoveRecord(record);

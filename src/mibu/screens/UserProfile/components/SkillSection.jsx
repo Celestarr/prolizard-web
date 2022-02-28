@@ -2,7 +2,6 @@
 
 import {
   Alert,
-  Autocomplete,
   Box,
   Chip,
   Collapse,
@@ -10,8 +9,8 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
+import AsyncAutocomplete from "mibu/components/AsyncAutocomplete";
 import APIService from "mibu/services/api";
-import makeChoiceMap from "mibu/utils/makeChoiceMap";
 import React from "react";
 import * as Yup from "yup";
 
@@ -19,7 +18,7 @@ import GenericSection from "./GenericSection";
 
 const Schema = Yup.object({
   name: Yup.string().required("Skill name is required"),
-  proficiency: Yup.string().required("Proficiency level is required"),
+  proficiency: Yup.number().required("Proficiency level is required"),
 });
 
 const defaultInitialValues = {
@@ -29,17 +28,10 @@ const defaultInitialValues = {
 
 const SkillSection = ({
   isEditable,
-  skillProficiencyLevelChoices,
   syncCurrentUserData,
   records,
 }) => {
   const nothingToShow = !records.length;
-  const skillProficiencyLevelChoiceValues = skillProficiencyLevelChoices.map((x) => x.id);
-  const skillProficiencyLevelChoiceValueLabelMap = makeChoiceMap(
-    skillProficiencyLevelChoices,
-    "id",
-    "name",
-  );
 
   const transformPayload = (values) => {
     const payload = {
@@ -141,13 +133,10 @@ const SkillSection = ({
                 fullWidth
                 margin="normal"
               >
-                <Autocomplete
+                <AsyncAutocomplete
                   fullWidth
-                  id="employment-type-combo-box"
-                  options={skillProficiencyLevelChoiceValues}
-                  getOptionLabel={(option) => (
-                    skillProficiencyLevelChoiceValueLabelMap[option]
-                  )}
+                  id="skill-proficiency-level-combo-box"
+                  fetchOptions={APIService.Common.retrieveSkillProficiencyLevels}
                   // onBlur={(event) => {
                   //   const { value } = event.target;
                   //   if (skillProficiencyLevelChoiceLabels.includes(value)) {
@@ -157,20 +146,14 @@ const SkillSection = ({
                   onChange={(_, value) => {
                     setFieldValue("proficiency", value);
                   }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      error={!!(touched.proficiency && errors.proficiency)}
-                      helperText={(
-                        touched.proficiency && errors.proficiency
-                          ? errors.proficiency
-                          : null
-                      )}
-                      label="Proficiency"
-                      required
-                      variant="outlined"
-                    />
+                  error={!!(touched.proficiency && errors.proficiency)}
+                  helperText={(
+                    touched.proficiency && errors.proficiency
+                      ? errors.proficiency
+                      : null
                   )}
+                  label="Proficiency"
+                  required
                   value={values.proficiency}
                 />
               </FormControl>

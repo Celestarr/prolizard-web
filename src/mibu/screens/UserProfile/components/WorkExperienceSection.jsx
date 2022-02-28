@@ -3,7 +3,6 @@
 import { WorkOutlineOutlined as WorkIcon } from "@mui/icons-material";
 import {
   Alert,
-  Autocomplete,
   Avatar,
   Box,
   Button,
@@ -16,10 +15,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import AsyncAutocomplete from "mibu/components/AsyncAutocomplete";
 import DatePicker from "mibu/components/DatePicker";
 import APIService from "mibu/services/api";
 import isEmpty from "mibu/utils/isEmpty";
-import makeChoiceMap from "mibu/utils/makeChoiceMap";
 import moment from "moment";
 import React from "react";
 import * as Yup from "yup";
@@ -59,7 +58,7 @@ const Schema = Yup.object({
   startDate: Yup.date()
     .required("Joining date is required.")
     .typeError("Invalid date"),
-  toe: Yup.mixed().notOneOf([null], "Employment type is required."),
+  toe: Yup.number().required("Employment type is required."),
 });
 
 const defaultInitialValues = {
@@ -75,13 +74,10 @@ const defaultInitialValues = {
 
 const WorkExperienceSection = ({
   isEditable,
-  employmentTypeChoices,
   syncCurrentUserData,
   records,
 }) => {
   const nothingToShow = !records.length;
-  const employmentTypeChoiceValues = employmentTypeChoices.map((x) => x.id);
-  const employmentTypeChoiceValueLabelMap = makeChoiceMap(employmentTypeChoices, "id", "name");
 
   const transformPayload = (values) => {
     const payload = {
@@ -246,11 +242,10 @@ const WorkExperienceSection = ({
                 fullWidth
                 margin="normal"
               >
-                <Autocomplete
+                <AsyncAutocomplete
                   fullWidth
                   id="employment-type-combo-box"
-                  options={employmentTypeChoiceValues}
-                  getOptionLabel={(option) => employmentTypeChoiceValueLabelMap[option]}
+                  fetchOptions={APIService.Common.retrieveEmploymentTypes}
                   // onBlur={(event) => {
                   //   const { value } = event.target;
                   //   if (employmentTypeChoiceValues.includes(value)) {
@@ -260,16 +255,10 @@ const WorkExperienceSection = ({
                   onChange={(_, value) => {
                     setFieldValue("toe", value);
                   }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      error={!!(touched.toe && errors.toe)}
-                      helperText={touched.toe && errors.toe ? errors.toe : null}
-                      label="Type of Employment"
-                      required
-                      variant="outlined"
-                    />
-                  )}
+                  error={!!(touched.toe && errors.toe)}
+                  helperText={touched.toe && errors.toe ? errors.toe : null}
+                  label="Type of Employment"
+                  required
                   value={values.toe}
                 />
               </FormControl>

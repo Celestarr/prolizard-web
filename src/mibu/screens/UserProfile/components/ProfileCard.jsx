@@ -1,11 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-props-no-spreading */
 
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Alert,
-  // AlertTitle,
-  Autocomplete,
   Avatar,
   Box,
   Button,
@@ -27,6 +24,7 @@ import {
 import { saveAs } from "file-saver";
 import { Formik } from "formik";
 import snakeCase from "lodash/snakeCase";
+import AsyncAutocomplete from "mibu/components/AsyncAutocomplete";
 import DatePicker from "mibu/components/DatePicker";
 import DummyAvatarImage from "mibu/images/dummy-avatar.png";
 import APIService from "mibu/services/api";
@@ -34,7 +32,6 @@ import cssImportantSuffixer from "mibu/utils/cssImportantSuffixer";
 import getHighestEducationObject from "mibu/utils/getHighestEducationObject";
 import getPreviousExperienceObject from "mibu/utils/getPreviousExperienceObject";
 import isEmpty from "mibu/utils/isEmpty";
-import makeChoiceMap from "mibu/utils/makeChoiceMap";
 import makeLocationString from "mibu/utils/makeLocationString";
 import makeUserHeadline from "mibu/utils/makeUserHeadline";
 import transformObject from "mibu/utils/transformObject";
@@ -54,10 +51,8 @@ const Schema = Yup.object({
 });
 
 const ProfileCard = ({
-  countryChoices,
   editOnMount,
   enqueueSnackbar,
-  genderChoices,
   isEditable,
   syncCurrentUserData,
   user,
@@ -93,30 +88,13 @@ const ProfileCard = ({
     setUserUsername(user.username);
     setUserAbout(user.about);
     setUserFullName(`${user.first_name} ${user.last_name}`);
-    setUserLocation(makeLocationString(user.address, user.country ? user.country.label : null));
+    setUserLocation(makeLocationString(user.address, user.country ? user.country.name : null));
     setUserHeadline(makeUserHeadline(user));
     setUserPreviousExperience(getPreviousExperienceObject(user.work_experiences));
     setUserEducationHighlight(getHighestEducationObject(user.academic_records));
   }, [user]);
 
-  const countryChoiceValues = countryChoices.map((x) => x.id);
-  const countryChoiceValueLabelMap = makeChoiceMap(countryChoices, "id", "name");
-  const genderChoiceValues = genderChoices.map((x) => x.id);
-  const genderChoiceValueLabelMap = makeChoiceMap(genderChoices, "id", "name");
-
   const portfolioUrl = "//www.google.com"; // new URL(username, AppConfig.PORTFOLIO_HOST).href;
-
-  // const isAboutEmpty = isEmpty(about);
-  // const isAddressEmpty = isEmpty(address);
-  // const isCountryEmpty = isEmpty(country);
-  // const isDobEmpty = isEmpty(dob);
-  // const isGenderEmpty = isEmpty(gender);
-
-  // const nothingToShow = isAboutEmpty
-  //   && isAddressEmpty
-  //   && isCountryEmpty
-  //   && isDobEmpty
-  //   && isGenderEmpty;
 
   const isResumeDownloading = resumeDownloadProgress !== null;
 
@@ -188,7 +166,7 @@ const ProfileCard = ({
         setSubmitting(false);
         setIsDialogLocked(false);
       });
-  }, [initialValues]);
+  }, [initialValues]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleResumeDownloadClick = () => {
     setResumeDownloadProgress(0);
@@ -212,7 +190,7 @@ const ProfileCard = ({
     if (editOnMount) {
       handleEditDialogOpen();
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!user) {
     return null;
@@ -480,11 +458,10 @@ const ProfileCard = ({
                     md={6}
                   >
                     <FormControl fullWidth margin="normal">
-                      <Autocomplete
+                      <AsyncAutocomplete
                         fullWidth
                         id="gender-combo-box"
-                        options={genderChoiceValues}
-                        getOptionLabel={(option) => genderChoiceValueLabelMap[option]}
+                        fetchOptions={APIService.Common.retrieveGenders}
                         // onBlur={(event) => {
                         //   const { value } = event.target;
                         //   if (genderChoiceValues.includes(value)) {
@@ -494,13 +471,7 @@ const ProfileCard = ({
                         onChange={(_, value) => {
                           setFieldValue("gender", value);
                         }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Gender"
-                            variant="outlined"
-                          />
-                        )}
+                        label="Gender"
                         value={values.gender}
                       />
                     </FormControl>
@@ -554,11 +525,10 @@ const ProfileCard = ({
                     md={6}
                   >
                     <FormControl fullWidth margin="normal">
-                      <Autocomplete
+                      <AsyncAutocomplete
                         fullWidth
-                        id="country-combo-box"
-                        options={countryChoiceValues}
-                        getOptionLabel={(option) => countryChoiceValueLabelMap[option]}
+                        inputId="country-combo-box"
+                        fetchOptions={APIService.Common.retrieveCountries}
                         // onBlur={(event) => {
                         //   const { value } = event.target;
                         //   // if (countryChoiceValues.includes(value)) {
@@ -568,14 +538,7 @@ const ProfileCard = ({
                         onChange={(_, value) => {
                           setFieldValue("country", value);
                         }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            autoComplete="nope"
-                            label="Country"
-                            variant="outlined"
-                          />
-                        )}
+                        label="Country"
                         value={values.country}
                       />
                     </FormControl>

@@ -124,10 +124,8 @@ const UserProfileScreen = () => {
     >
       <Helmet title={userFullName} />
       <ProfileCard
-        countryChoices={[]}
         editOnMount={editOnMount}
         enqueueSnackbar={enqueueSnackbar}
-        genderChoices={[]}
         isEditable={isEditable}
         syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
         user={data}
@@ -179,7 +177,6 @@ const UserProfileScreen = () => {
 
                 <LanguageSection
                   isEditable={isEditable}
-                  languageProficiencyLevelChoices={[]}
                   syncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
                   records={languages}
                 />
