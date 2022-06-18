@@ -1,17 +1,29 @@
-import "mibu/styles/index.scss";
+import "busan/styles/index.scss";
 
 import AdapterMoment from "@mui/lab/AdapterMoment";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 // import enLocale from "date-fns/locale/en-US";
-import App from "mibu/components/App";
-import store from "mibu/store";
-import reportWebVitals from "mibu/utils/report-web-vitals";
+import App from "busan/components/App";
+// import routes from "busan/constants/routes";
+import AppSettings from "busan/settings";
+import store from "busan/store";
+import reportWebVitals from "busan/utils/report-web-vitals";
 import { SnackbarProvider } from "notistack";
 import React from "react";
 import ReactDOM from "react-dom";
 import { HelmetProvider } from "react-helmet-async";
+import { AuthProvider } from "react-oidc-context";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
+
+const onSigninCallback = (user) => {
+  console.log("onSigninCallback", user);
+  window.history.replaceState(
+    {},
+    document.title,
+    window.location.pathname,
+  );
+};
 
 ReactDOM.render(
   <React.StrictMode>
@@ -20,7 +32,15 @@ ReactDOM.render(
         <Provider store={store}>
           <LocalizationProvider dateAdapter={AdapterMoment}>
             <BrowserRouter>
-              <App />
+              <AuthProvider
+                authority={AppSettings.OAUTH_BASE_URL}
+                client_id={AppSettings.OAUTH_CLIENT_ID}
+                onSigninCallback={onSigninCallback}
+                redirect_uri={window.location.origin}
+                scope="read write"
+              >
+                <App />
+              </AuthProvider>
             </BrowserRouter>
           </LocalizationProvider>
         </Provider>

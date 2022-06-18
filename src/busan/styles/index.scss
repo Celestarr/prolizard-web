@@ -1,0 +1,50 @@
+html {
+  text-size-adjust: 100%;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+div:focus {
+  outline: none;
+}
+
+
+a, abbr, acronym, address, applet, article, aside, audio, b, big, blockquote, body, canvas, caption, center, cite, code, dd, del, details, dfn, div, dl, dt, em, embed, fieldset, figcaption, figure, footer, form, h1, h2, h3, h4, h5, h6, header, hgroup, html, i, iframe, img, ins, kbd, label, legend, li, mark, menu, nav, object, ol, output, p, pre, q, ruby, s, samp, section, small, span, strike, strong, sub, summary, sup, table, tbody, td, tfoot, th, thead, time, tr, tt, u, ul, var, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+.busan-app-bar {
+  .busan-app-toolbar {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  .busan-app-bar-avatar {
+    font-size: inherit !important;
+  }
+}
+
+.busan-app-logo {
+  height: 50px;
+  width: 40px;
+  vertical-align: middle;
+}
+
+.busan-transparent-hover:hover {
+  background-color: transparent !important;
+}
+
+.busan-no-text-transform {
+  text-transform: none !important;
+}

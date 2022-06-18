@@ -1,11 +1,12 @@
 {
-  "name": "@myfo/mibu",
+  "name": "@myfo/busan",
   "version": "0.1.0-pre3",
   "private": true,
   "engines": {
     "node": ">=14.18"
   },
   "dependencies": {
+    "@auth0/auth0-react": "^1.9.0",
     "@date-io/moment": "^2.11.0",
     "@emotion/react": "^11.5.0",
     "@emotion/styled": "^11.3.0",
@@ -24,10 +25,12 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "notistack": "^2.0.3",
+    "oidc-client-ts": "^2.0.5",
     "qs": "^6.10.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-helmet-async": "^1.1.2",
+    "react-oidc-context": "^2.1.0",
     "react-redux": "^7.2.6",
     "react-router-dom": "^6.0.1",
     "react-scripts": "4.0.3",
