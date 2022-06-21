@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+import AppActionTypes from "busan/constants/actionTypes/app";
 import APIService from "busan/services/api";
 
 import {
@@ -7,27 +7,17 @@ import {
   onRetrieveUserDataSuccess,
 } from "./user";
 
-const APP_OFFLINE = "busan/offline";
-const APP_ONLINE = "busan/online";
-const APP_BOOTED = "busan/booted";
-
-export const appActions = {
-  APP_OFFLINE,
-  APP_ONLINE,
-  APP_BOOTED,
-};
-
 export const onAppOffline = () => ({
-  type: APP_OFFLINE,
+  type: AppActionTypes.APP_OFFLINE,
 });
 
 export const onAppOnline = (err) => ({
-  type: APP_ONLINE,
+  type: AppActionTypes.APP_ONLINE,
   payload: { err },
 });
 
 const onAppBoot = () => ({
-  type: APP_BOOTED,
+  type: AppActionTypes.APP_BOOTED,
 });
 
 export const bootApp = (isAuthenticated) => (dispatch) => {
@@ -47,3 +37,7 @@ export const bootApp = (isAuthenticated) => (dispatch) => {
     dispatch(onAppBoot());
   }
 };
+
+export const onAppSignInTrigger = () => ({
+  type: AppActionTypes.APP_SIGN_IN_TRIGGERED,
+});

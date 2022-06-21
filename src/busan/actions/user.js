@@ -1,42 +1,19 @@
+import UserActionTypes from "busan/constants/actionTypes/user";
 import APIService from "busan/services/api";
 import capitalizeFirstLetter from "busan/utils/string/capitalizeFirstLetter";
 import snakeCase from "lodash/snakeCase";
 
-const CURRENT_USER_DATA_UPDATE_REQUESTED = "@users/me/update/requested";
-const CURRENT_USER_DATA_UPDATE_FAILED = "@users/me/update/failed";
-const CURRENT_USER_DATA_UPDATE_SUCCEEDED = "@users/me/update/succeeded";
-const SIGN_OUT_USER_REQUESTED = "@users/me/signOut/requested";
-const SIGN_OUT_USER_FAILED = "@users/me/signOut/failed";
-const SIGN_OUT_USER_SUCCEEDED = "@users/me/signOut/succeeded";
-const RETRIEVE_USER_DATA_REQUESTED = "@users/retrieve/requested";
-const RETRIEVE_USER_DATA_FAILED = "@users/retrieve/failed";
-const RETRIEVE_USER_DATA_SUCCEEDED = "@users/retrieve/succeeded";
-const SYNC_CURRENT_USER_DATA = "@users/me/sync";
-
-export const userActions = {
-  CURRENT_USER_DATA_UPDATE_REQUESTED,
-  CURRENT_USER_DATA_UPDATE_FAILED,
-  CURRENT_USER_DATA_UPDATE_SUCCEEDED,
-  SIGN_OUT_USER_REQUESTED,
-  SIGN_OUT_USER_FAILED,
-  SIGN_OUT_USER_SUCCEEDED,
-  RETRIEVE_USER_DATA_REQUESTED,
-  RETRIEVE_USER_DATA_FAILED,
-  RETRIEVE_USER_DATA_SUCCEEDED,
-  SYNC_CURRENT_USER_DATA,
-};
-
 const onUpdateCurrentUserDataRequest = () => ({
-  type: CURRENT_USER_DATA_UPDATE_REQUESTED,
+  type: UserActionTypes.CURRENT_USER_DATA_UPDATE_REQUESTED,
 });
 
 const onUpdateCurrentUserDataFailure = (err) => ({
-  type: CURRENT_USER_DATA_UPDATE_FAILED,
+  type: UserActionTypes.CURRENT_USER_DATA_UPDATE_FAILED,
   payload: err,
 });
 
 const onUpdateCurrentUserDataSuccess = (data) => ({
-  type: CURRENT_USER_DATA_UPDATE_SUCCEEDED,
+  type: UserActionTypes.CURRENT_USER_DATA_UPDATE_SUCCEEDED,
   payload: data,
 });
 
@@ -124,17 +101,17 @@ export const updateCurrentUserData = ({
 };
 
 export const onRetrieveUserDataRequest = (username) => ({
-  type: RETRIEVE_USER_DATA_REQUESTED,
+  type: UserActionTypes.RETRIEVE_USER_DATA_REQUESTED,
   payload: { username },
 });
 
 export const onRetrieveUserDataFailure = (username, err) => ({
-  type: RETRIEVE_USER_DATA_FAILED,
+  type: UserActionTypes.RETRIEVE_USER_DATA_FAILED,
   payload: { err, username },
 });
 
 export const onRetrieveUserDataSuccess = (username, data) => ({
-  type: RETRIEVE_USER_DATA_SUCCEEDED,
+  type: UserActionTypes.RETRIEVE_USER_DATA_SUCCEEDED,
   payload: { data, username },
 });
 
@@ -188,20 +165,23 @@ export const syncCurrentUserData = (scope, data) => (dispatch, getState) => {
     }
   }
 
-  dispatch({ type: SYNC_CURRENT_USER_DATA, payload: { data: currentData, username: "me" } });
+  dispatch({
+    type: UserActionTypes.SYNC_CURRENT_USER_DATA,
+    payload: { data: currentData, username: "me" },
+  });
 };
 
 export const onSignOutUserRequest = () => ({
-  type: SIGN_OUT_USER_REQUESTED,
+  type: UserActionTypes.SIGN_OUT_USER_REQUESTED,
 });
 
 export const onSignOutUserFailure = (err) => ({
-  type: SIGN_OUT_USER_FAILED,
+  type: UserActionTypes.SIGN_OUT_USER_FAILED,
   payload: { err },
 });
 
 export const onSignOutUserSuccess = () => ({
-  type: SIGN_OUT_USER_SUCCEEDED,
+  type: UserActionTypes.SIGN_OUT_USER_SUCCEEDED,
 });
 
 export const signUserOut = (opts) => (dispatch) => {

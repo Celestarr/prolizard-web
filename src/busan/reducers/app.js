@@ -1,28 +1,35 @@
-import { appActions } from "busan/actions/app";
+import AppActionTypes from "busan/constants/actionTypes/app";
 
 const initialState = {
   booted: false,
   online: true,
+  triggerSignIn: false,
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case appActions.APP_BOOTED: {
+    case AppActionTypes.APP_BOOTED: {
       return {
         ...state,
         booted: true,
       };
     }
-    case appActions.APP_OFFLINE: {
+    case AppActionTypes.APP_OFFLINE: {
       return {
         ...state,
         online: false,
       };
     }
-    case appActions.APP_ONLINE: {
+    case AppActionTypes.APP_ONLINE: {
       return {
         ...state,
         online: true,
+      };
+    }
+    case AppActionTypes.APP_SIGN_IN_TRIGGERED: {
+      return {
+        ...state,
+        triggerSignIn: true,
       };
     }
     default: return state;

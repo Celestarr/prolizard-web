@@ -6,8 +6,8 @@ import { bootApp } from "busan/actions/app";
 import GlobalSpinner from "busan/components/GlobalSpinner";
 import {
   appBootStateSelector,
+  appSignInTriggerStateSelector,
   currentUserSelector,
-  // signInStateSelector,
 } from "busan/reducers/selectors";
 import getRoutes from "busan/routes";
 import AppSettings from "busan/settings";
@@ -24,6 +24,7 @@ const App = () => {
   const auth = useAuth();
   const dispatch = useDispatch();
   const booted = useSelector(appBootStateSelector);
+  const shouldTriggerSignIn = useSelector(appSignInTriggerStateSelector);
   const user = useSelector(currentUserSelector);
   const routes = useRoutes(getRoutes(auth.isAuthenticated));
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -37,6 +38,12 @@ const App = () => {
       dispatch(bootApp(auth.isAuthenticated));
     }
   }, [auth.error, auth.isAuthenticated, auth.isLoading, auth.signinRedirect]);
+
+  useEffect(() => {
+    if (booted && shouldTriggerSignIn) {
+      auth.signinRedirect();
+    }
+  }, [booted, shouldTriggerSignIn]);
 
   useEffect(() => {
     if (user) {
@@ -62,7 +69,7 @@ const App = () => {
   );
 
   // ["signinSilent", "signinRedirect"].includes(auth.activeNavigator) || auth.isLoading
-  if (!booted) {
+  if (!booted || shouldTriggerSignIn) {
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />

@@ -1,10 +1,10 @@
-import { userActions } from "busan/actions/user";
+import UserActionTypes from "busan/constants/actionTypes/user";
 
 const initialState = {};
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case userActions.CURRENT_USER_DATA_UPDATE_FAILED: {
+    case UserActionTypes.CURRENT_USER_DATA_UPDATE_FAILED: {
       return {
         ...state,
         me: {
@@ -14,7 +14,7 @@ export default (state = initialState, action) => {
         },
       };
     }
-    case userActions.CURRENT_USER_DATA_UPDATE_REQUESTED: {
+    case UserActionTypes.CURRENT_USER_DATA_UPDATE_REQUESTED: {
       return {
         ...state,
         me: {
@@ -23,7 +23,7 @@ export default (state = initialState, action) => {
         },
       };
     }
-    case userActions.CURRENT_USER_DATA_UPDATE_SUCCEEDED: {
+    case UserActionTypes.CURRENT_USER_DATA_UPDATE_SUCCEEDED: {
       return {
         ...state,
         me: {
@@ -34,7 +34,7 @@ export default (state = initialState, action) => {
       };
     }
     // --
-    case userActions.RETRIEVE_USER_DATA_FAILED: {
+    case UserActionTypes.RETRIEVE_USER_DATA_FAILED: {
       const { err, username } = action.payload;
 
       return {
@@ -46,7 +46,7 @@ export default (state = initialState, action) => {
         },
       };
     }
-    case userActions.RETRIEVE_USER_DATA_REQUESTED: {
+    case UserActionTypes.RETRIEVE_USER_DATA_REQUESTED: {
       const { username } = action.payload;
 
       return {
@@ -57,8 +57,8 @@ export default (state = initialState, action) => {
         },
       };
     }
-    case userActions.RETRIEVE_USER_DATA_SUCCEEDED:
-    case userActions.SYNC_CURRENT_USER_DATA: {
+    case UserActionTypes.RETRIEVE_USER_DATA_SUCCEEDED:
+    case UserActionTypes.SYNC_CURRENT_USER_DATA: {
       const { data, username } = action.payload;
 
       return {
@@ -71,7 +71,7 @@ export default (state = initialState, action) => {
       };
     }
     // --
-    case userActions.SIGN_OUT_USER_FAILED: {
+    case UserActionTypes.SIGN_OUT_USER_FAILED: {
       return {
         ...state,
         me: {
@@ -81,7 +81,7 @@ export default (state = initialState, action) => {
         },
       };
     }
-    case userActions.SIGN_OUT_USER_REQUESTED: {
+    case UserActionTypes.SIGN_OUT_USER_REQUESTED: {
       return {
         ...state,
         me: {
@@ -90,7 +90,7 @@ export default (state = initialState, action) => {
         },
       };
     }
-    case userActions.SIGN_OUT_USER_SUCCEEDED: {
+    case UserActionTypes.SIGN_OUT_USER_SUCCEEDED: {
       const stateCopy = { ...state };
 
       delete stateCopy.me;

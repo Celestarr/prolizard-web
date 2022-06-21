@@ -9,12 +9,12 @@ import AppSettings from "busan/settings";
 import store from "busan/store";
 import reportWebVitals from "busan/utils/report-web-vitals";
 import { SnackbarProvider } from "notistack";
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import ReactDOM from "react-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "react-oidc-context";
 import { Provider } from "react-redux";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, useLocation } from "react-router-dom";
 
 const onSigninCallback = (user) => {
   console.log("onSigninCallback", user);
@@ -23,6 +23,14 @@ const onSigninCallback = (user) => {
     document.title,
     window.location.pathname,
   );
+};
+
+const ScrollToTopWrapper = ({ children }) => {
+  const location = useLocation();
+  useLayoutEffect(() => {
+    document.documentElement.scrollTo(0, 0);
+  }, [location.pathname]);
+  return children;
 };
 
 ReactDOM.render(
@@ -39,7 +47,9 @@ ReactDOM.render(
                 redirect_uri={window.location.origin}
                 scope="read write"
               >
-                <App />
+                <ScrollToTopWrapper>
+                  <App />
+                </ScrollToTopWrapper>
               </AuthProvider>
             </BrowserRouter>
           </LocalizationProvider>

@@ -7,6 +7,12 @@ export const appBootStateSelector = (state) => getPropertyValue(
   false,
 );
 
+export const appSignInTriggerStateSelector = (state) => getPropertyValue(
+  state,
+  "app.triggerSignIn",
+  false,
+);
+
 export const currentUserSelector = (state) => getPropertyValue(state, "users.me.data", null);
 
 export const currentUserErrorStateSelector = (state) => getPropertyValue(

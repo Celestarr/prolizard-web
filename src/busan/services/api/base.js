@@ -1,5 +1,7 @@
 import axios from "axios";
+import AppActionTypes from "busan/constants/actionTypes/app";
 import AppSettings from "busan/settings";
+import store from "busan/store";
 import { User } from "oidc-client-ts";
 
 const _getUser = () => {
@@ -98,11 +100,11 @@ class BaseAPIService {
 
     // eslint-disable-next-line arrow-body-style
     $axios.interceptors.response.use(undefined, async (err) => {
-      // const { response: errResponse } = err;
+      const { response: errResponse } = err;
 
-      // if (errResponse.status === 401) {
-      //   store.dispatch(signUserOut());
-      // }
+      if (errResponse.status === 401) {
+        store.dispatch({ type: AppActionTypes.APP_SIGN_IN_TRIGGERED });
+      }
 
       return Promise.reject(err);
     });
