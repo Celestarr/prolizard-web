@@ -1,16 +1,16 @@
-import "busan/styles/index.scss";
+import "app/styles/index.scss";
 
-import AdapterMoment from "@mui/lab/AdapterMoment";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 // import enLocale from "date-fns/locale/en-US";
-import App from "busan/components/App";
-// import routes from "busan/constants/routes";
-import AppSettings from "busan/settings";
-import store from "busan/store";
-import reportWebVitals from "busan/utils/report-web-vitals";
+import App from "app/components/App";
+// import routes from "app/constants/routes";
+import AppSettings from "app/settings";
+import store from "app/store";
+import reportWebVitals from "app/utils/report-web-vitals";
 import { SnackbarProvider } from "notistack";
 import React, { useLayoutEffect } from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "react-oidc-context";
 import { Provider } from "react-redux";
@@ -33,7 +33,10 @@ const ScrollToTopWrapper = ({ children }) => {
   return children;
 };
 
-ReactDOM.render(
+const container = document.getElementById("root");
+const root = createRoot(container); // createRoot(container!) if you use TypeScript
+
+root.render(
   <React.StrictMode>
     <HelmetProvider>
       <SnackbarProvider>
@@ -57,7 +60,6 @@ ReactDOM.render(
       </SnackbarProvider>
     </HelmetProvider>
   </React.StrictMode>,
-  document.getElementById("root"),
 );
 
 // If you want to start measuring performance in your app, pass a function

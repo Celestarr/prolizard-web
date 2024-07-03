@@ -12,9 +12,11 @@ module.exports = {
         some: ["nesting", "id"],
       },
     }],
-    "max-len": ["error", { code: 100, comments: 100, tabWidth: 2 }],
+    "max-len": ["error", { code: 119, comments: 99, tabWidth: 2 }],
     "no-underscore-dangle": "off",
     quotes: ["error", "double"],
+    "react/no-unstable-nested-components": "off", // fix
+    "default-param-last": "off", // fix
     "react/prop-types": "off",
     "simple-import-sort/imports": "error",
   },
