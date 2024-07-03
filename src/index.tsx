@@ -9,6 +9,7 @@ import AppSettings from "app/settings";
 import store from "app/store";
 import reportWebVitals from "app/utils/report-web-vitals";
 import { SnackbarProvider } from "notistack";
+import { User } from "oidc-client-ts";
 import React, { useLayoutEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
@@ -16,7 +17,7 @@ import { AuthProvider } from "react-oidc-context";
 import { Provider } from "react-redux";
 import { BrowserRouter, useLocation } from "react-router-dom";
 
-const onSigninCallback = (user) => {
+const onSigninCallback = (user: User | void) => {
   console.log("onSigninCallback", user);
   window.history.replaceState(
     {},
@@ -25,7 +26,9 @@ const onSigninCallback = (user) => {
   );
 };
 
-const ScrollToTopWrapper = ({ children }) => {
+const ScrollToTopWrapper: React.FC<{
+  children: React.ReactNode
+}> = ({ children }) => {
   const location = useLocation();
   useLayoutEffect(() => {
     document.documentElement.scrollTo(0, 0);
@@ -34,7 +37,7 @@ const ScrollToTopWrapper = ({ children }) => {
 };
 
 const container = document.getElementById("root");
-const root = createRoot(container); // createRoot(container!) if you use TypeScript
+const root = createRoot(container!);
 
 root.render(
   <React.StrictMode>

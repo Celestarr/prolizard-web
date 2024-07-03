@@ -6,15 +6,14 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 
 const AuthCallbackScreen = React.lazy(() => import("app/screens/AuthCallback"));
-// const AuthorizeScreen = React.lazy(() => import("app/screens/Authorize"));
+const CareerJobTrackerScreen = React.lazy(() => import("app/screens/Career/JobTracker"));
 const FeedScreen = React.lazy(() => import("app/screens/Feed"));
 const SettingsScreen = React.lazy(() => import("app/screens/Settings"));
 const PreferenceSettingsScreen = React.lazy(
   () => import("app/screens/Settings/screens/Preferences"),
 );
+const RMArticleSearchScreen = React.lazy(() => import("app/screens/ReferenceManagement/ArticleSearch"));
 const AccountSettingsScreen = React.lazy(() => import("app/screens/Settings/screens/Account"));
-// const SignInScreen = React.lazy(() => import("app/screens/SignIn"));
-// const SignUpScreen = React.lazy(() => import("app/screens/SignUp"));
 const UserProfileScreen = React.lazy(() => import("app/screens/UserProfile"));
 
 const wrapLazyElement = (Element) => (
@@ -39,7 +38,23 @@ export default function getRoutes(isLoggedIn) {
     element: <PrimaryContainer />,
     children: [
       { path: Routes.HOME, element: wrapLazyElement(FeedScreen) },
-      {
+      { // /career
+        path: Routes.CAREER,
+        element: null,
+        children: [
+          { path: Routes.CAREER, element: <Navigate to={Routes.CAREER_JOB_TRACKER} /> },
+          { path: Routes.CAREER_JOB_TRACKER, element: wrapLazyElement(CareerJobTrackerScreen) },
+        ],
+      },
+      { // /rm
+        path: Routes.RM,
+        element: null,
+        children: [
+          { path: Routes.RM, element: <Navigate to={Routes.RM_ARTICLE_SEARCH} /> },
+          { path: Routes.RM_ARTICLE_SEARCH, element: wrapLazyElement(RMArticleSearchScreen) },
+        ],
+      },
+      { // /settings
         path: Routes.SETTINGS,
         element: wrapLazyElement(SettingsScreen),
         children: [

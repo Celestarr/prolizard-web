@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 
 import OverviewCard from "./components/OverviewCard";
 
-function FeedScreen() {
+export default function ArticleSearchScreen() {
   const user = useSelector(currentUserSelector);
 
   if (!user) {
@@ -89,5 +89,3 @@ function FeedScreen() {
     </Grid>
   );
 }
-
-export default FeedScreen;

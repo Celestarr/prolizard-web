@@ -14,17 +14,20 @@ module.exports = {
     }],
     "max-len": ["error", { code: 119, comments: 99, tabWidth: 2 }],
     "no-underscore-dangle": "off",
+    "no-unused-vars": "off",
     quotes: ["error", "double"],
+    "react/jsx-filename-extension": [2, { extensions: [".js", ".jsx", ".ts", ".tsx"] }],
     "react/no-unstable-nested-components": "off", // fix
     "default-param-last": "off", // fix
     "react/prop-types": "off",
     "simple-import-sort/imports": "error",
+    "@typescript-eslint/no-unused-vars": "off",
   },
   settings: {
     "import/resolver": {
       node: {
         paths: ["./src"],
-        extensions: [".js", ".jsx"],
+        extensions: [".js", ".jsx", ".ts", ".tsx"],
       },
     },
   },

@@ -1,5 +1,7 @@
 const Routes = {
   AUTH_CALLBACK: "/auth-callback",
+  CAREER: "/career",
+  CAREER_JOB_TRACKER: "/career/job-tracker",
   FORGOT_PASSWORD: "/forgot-password",
   HOME: "/",
   PROFILE: "/profile",
@@ -11,6 +13,8 @@ const Routes = {
   SETTINGS_PRIVACY: "/settings/privacy",
   SETTINGS_SECURITY: "/settings/security",
   LOGIN: "/login",
+  RM: "/rm",
+  RM_ARTICLE_SEARCH: "/rm/article-search",
   SIGN_UP: "/sign-up",
   USER_PROFILE: "/profile/:username",
 };
