@@ -14,20 +14,21 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
+import DynamicForm from "app/components/DynamicForm";
 import GlobalSpinner from "app/components/GlobalSpinner";
 import { currentUserSelector } from "app/reducers/selectors";
 import {
-  useRetrieveAllQuery as useRetrieveAllJobTrackersQuery,
+  useGetJobTrackerModelConfigQuery,
+  useGetJobTrackersQuery,
 } from "app/services/job-trackers";
 import {
-  useRetrieveOneQuery as useRetrieveOneUserProfileQuery,
+  useGetUserProfileByIdQuery,
 } from "app/services/user-profiles";
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useSelector } from "react-redux";
 
 import DataTable from "./components/DataTable";
-// import EditDialog from "./components/EditDialog";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -72,20 +73,24 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function JobTrackerScreen() {
-  const { data: user, isLoading: isUserLoading } = useRetrieveOneUserProfileQuery("me");
+  const { data: user, isLoading: isUserLoading } = useGetUserProfileByIdQuery("me");
   const [selectedRows, setSelectedRows] = React.useState<number[]>([]);
-  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(true);
+  const [isFormDialogOpen, setIsFormDialogOpen] = React.useState(false);
   const [paginationModel, setPaginationModel] = useState({
     page: 1,
     pageSize: 10,
   });
-  const { data, isLoading } = useRetrieveAllJobTrackersQuery({
+  const { data, isLoading } = useGetJobTrackersQuery({
     page: paginationModel.page,
     pageSize: paginationModel.pageSize,
   });
 
-  const closeEditDialog = () => {
-    setIsEditDialogOpen(false);
+  const closeFormDialog = () => {
+    setIsFormDialogOpen(false);
+  };
+
+  const openFormDialog = () => {
+    setIsFormDialogOpen(true);
   };
 
   const reloadPage = () => {};
@@ -101,11 +106,11 @@ export default function JobTrackerScreen() {
     >
       <Helmet title="Job Tracker" />
 
-      {/* <EditDialog
-        isOpen={isEditDialogOpen}
-        onClose={closeEditDialog}
-        onEditSuccess={reloadPage}
-      /> */}
+      <DynamicForm
+        getModelConfigQuery={useGetJobTrackerModelConfigQuery}
+        isOpen={isFormDialogOpen}
+        onClose={closeFormDialog}
+      />
 
       <Grid
         item
@@ -143,8 +148,8 @@ export default function JobTrackerScreen() {
                 <Grid item>
                   <Button
                     component="label"
+                    onClick={openFormDialog}
                     variant="contained"
-                    tabIndex={-1}
                     startIcon={<AddIcon />}
                   >
                     New
@@ -156,7 +161,6 @@ export default function JobTrackerScreen() {
                       color="error"
                       component="label"
                       variant="contained"
-                      tabIndex={-1}
                       startIcon={<DeleteIcon />}
                     >
                       Remove

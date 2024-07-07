@@ -3,6 +3,31 @@ import AppSettings from "app/settings";
 import { RootState } from "app/store";
 import { User } from "oidc-client-ts";
 
+export interface FormFieldConfig {
+  max_length?: number; // for string
+  min_length?: number; // for string
+  max_value?: number; // for string
+  min_value?: number; // for numbers
+  name: string;
+  regex?: string;
+  required: boolean;
+  type: "date" | "datetime" | "email" | "integer" | "string";
+  verbose_name: string;
+}
+
+export interface FormLayoutConfig {
+  fields: string[];
+  row: number;
+  sizes: number[];
+}
+
+export interface ModelConfig {
+  fields: FormFieldConfig[];
+  layout: FormLayoutConfig[];
+  name: string;
+  verbose_name: string;
+}
+
 export interface PaginatedResponse<T> {
   count: number;
   next: null | string;

@@ -1,6 +1,11 @@
 import { retry } from "@reduxjs/toolkit/query/react";
 
-import { api, PaginatedRequestQuery, PaginatedResponse } from "./api";
+import {
+  api,
+  ModelConfig,
+  PaginatedRequestQuery,
+  PaginatedResponse,
+} from "./api";
 
 export interface JobTracker {
   company_name: string;
@@ -25,7 +30,11 @@ const TAG = "job-tracker";
 
 export const jobTrackers = api.injectEndpoints({
   endpoints: (build) => ({
-    retrieveAll: build.query<PaginatedResponse<JobTracker>, PaginatedRequestQuery>({
+    getJobTrackerModelConfig: build.query<ModelConfig, void>({
+      query: () => `${URL_PATH}/model-config`,
+      providesTags: (_post, _err) => [{ type: TAG, id: "model-config" }],
+    }),
+    getJobTrackers: build.query<PaginatedResponse<JobTracker>, PaginatedRequestQuery>({
       query: ({ page, pageSize }) => ({ url: `${URL_PATH}?page=${page}&page_size=${pageSize}` }),
       providesTags: (result) => (typeof result !== "undefined" ? [
         ...result.results.map(({ id }) => ({ type: TAG, id }) as const),
@@ -68,9 +77,10 @@ export const jobTrackers = api.injectEndpoints({
 });
 
 export const {
-  useRetrieveAllQuery,
+  useGetJobTrackerModelConfigQuery,
+  useGetJobTrackersQuery,
 } = jobTrackers;
 
-export const {
-  endpoints: { retrieveAll },
-} = jobTrackers;
+// export const {
+//   endpoints: { retrieveAll },
+// } = jobTrackers;

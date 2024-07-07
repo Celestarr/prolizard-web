@@ -18,6 +18,7 @@ function DatePicker({
   label,
   margin = "normal",
   mask = DEFAULT_MASK,
+  name,
   onBlur,
   onChange,
   // placeholder,
@@ -30,6 +31,7 @@ function DatePicker({
       inputFormat={format}
       clearable={clearable}
       label={label}
+      name={name}
       onChange={onChange}
       // InputProps={{
       //   placeholder: placeholder || DEFAULT_PLACEHOLDER,

@@ -6,7 +6,7 @@ import BasicError from "app/components/BasicError";
 import GlobalSpinner from "app/components/GlobalSpinner";
 import getRoutes from "app/routes";
 import {
-  useRetrieveOneQuery,
+  useGetUserProfileByIdQuery,
 } from "app/services/user-profiles";
 import AppSettings from "app/settings";
 import { useAppDispatch, useTypedSelector } from "app/store";
@@ -31,7 +31,7 @@ export default function App() {
     data,
     error,
     isLoading,
-  } = useRetrieveOneQuery("me", { skip: !auth.isAuthenticated });
+  } = useGetUserProfileByIdQuery("me", { skip: !auth.isAuthenticated });
 
   // Automatically sign-in
   React.useEffect(() => {

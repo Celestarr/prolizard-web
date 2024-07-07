@@ -15,7 +15,7 @@ import Typography from "@mui/material/Typography";
 import { DRAWER_WIDTH } from "app/constants/ui.ts";
 import AppLogo from "app/images/myfolab-icon-310x310.png";
 import {
-  retrieveOne as UserProfileRetrieveOneEndpoint,
+  getUserProfileById,
 } from "app/services/user-profiles";
 import AppSettings from "app/settings";
 import { useTypedSelector } from "app/store";
@@ -39,7 +39,7 @@ export default function Header({
   const [, setIsSigningOut] = useState(false);
   const [uiMode, setUIMode] = useState("light");
 
-  const { data: user } = useTypedSelector(UserProfileRetrieveOneEndpoint.select("me"));
+  const { data: user } = useTypedSelector(getUserProfileById.select("me"));
 
   useEffect(() => {
     // if (uiMode !== user.preferences.ui_mode) {

@@ -68,7 +68,7 @@ const TAG = "user-profile";
 
 export const userProfilesApi = api.injectEndpoints({
   endpoints: (build) => ({
-    retrieveOne: build.query<UserProfile, number | string>({
+    getUserProfileById: build.query<UserProfile, number | string>({
       query: (id) => `${URL_PATH}/${id}`,
       providesTags: (_post, _err, id) => [{ type: TAG, id }],
     }),
@@ -76,10 +76,9 @@ export const userProfilesApi = api.injectEndpoints({
 });
 
 export const {
-  useLazyRetrieveOneQuery,
-  useRetrieveOneQuery,
+  useGetUserProfileByIdQuery,
 } = userProfilesApi;
 
 export const {
-  endpoints: { retrieveOne },
+  endpoints: { getUserProfileById },
 } = userProfilesApi;
