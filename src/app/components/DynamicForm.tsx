@@ -28,46 +28,46 @@ const createYupSchema = (config: ModelConfig) => {
       schema[field.name] = Yup.string().email("Invalid email address");
 
       if (field.required) {
-        schema[field.name] = schema[field.name].required(`${field.name} is required`);
+        schema[field.name] = schema[field.name].required(`${field.verbose_name} is required`);
       }
     } else if (field.type === "integer") {
       schema[field.name] = Yup.number().integer();
 
       if (field.required) {
-        schema[field.name] = schema[field.name].required(`${field.name} is required`);
+        schema[field.name] = schema[field.name].required(`${field.verbose_name} is required`);
       }
 
       if (field.max_length) {
         schema[field.name] = schema[field.name].max(
           field.max_length,
-          `${field.name} must be at most ${field.max_length}`,
+          `${field.verbose_name} must be at most ${field.max_length}`,
         );
       }
 
       if (field.min_length) {
         schema[field.name] = schema[field.name].min(
           field.min_length,
-          `${field.name} must be at least ${field.min_length}`,
+          `${field.verbose_name} must be at least ${field.min_length}`,
         );
       }
     } else if (field.type === "string") {
       schema[field.name] = Yup.string();
 
       if (field.required) {
-        schema[field.name] = schema[field.name].required(`${field.name} is required`);
+        schema[field.name] = schema[field.name].required(`${field.verbose_name} is required`);
       }
 
       if (field.max_length) {
         schema[field.name] = schema[field.name].max(
           field.max_length,
-          `${field.name} must be at most ${field.max_length} characters`,
+          `${field.verbose_name} must be at most ${field.max_length} characters`,
         );
       }
 
       if (field.min_length) {
         schema[field.name] = schema[field.name].min(
           field.min_length,
-          `${field.name} must be at least ${field.min_length} characters`,
+          `${field.verbose_name} must be at least ${field.min_length} characters`,
         );
       }
     }
