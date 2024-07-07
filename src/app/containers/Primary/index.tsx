@@ -14,12 +14,16 @@ import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 
-import Drawer from "./components/Drawer.tsx";
+import Drawer from "./components/Drawer";
 import Header from "./components/Header";
 
-function PrimaryContainer({
+interface PrimaryContainerProps {
+  pageTitle?: string;
+}
+
+export default function PrimaryContainer({
   pageTitle,
-}) {
+}: PrimaryContainerProps) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
   const dispatch = useDispatch();
@@ -55,9 +59,6 @@ function PrimaryContainer({
       <Helmet title={pageTitle} />
       <Header
         handleDrawerToggle={handleDrawerToggle}
-        onSignOut={(...args) => dispatch(signUserOut(...args))}
-        onSyncCurrentUserData={(...args) => dispatch(syncCurrentUserData(...args))}
-        user={user}
       />
       <Drawer
         handleDrawerClose={handleDrawerClose}
@@ -74,5 +75,3 @@ function PrimaryContainer({
     </>
   );
 }
-
-export default PrimaryContainer;

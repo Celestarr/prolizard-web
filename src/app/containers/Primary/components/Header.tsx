@@ -14,67 +14,64 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { DRAWER_WIDTH } from "app/constants/ui.ts";
 import AppLogo from "app/images/myfolab-icon-310x310.png";
-import APIService from "app/services/api";
+import {
+  retrieveOne as UserProfileRetrieveOneEndpoint,
+} from "app/services/user-profiles";
 import AppSettings from "app/settings";
+import { useTypedSelector } from "app/store";
 import classNames from "classnames";
-import React, { useEffect, useState } from "react";
+import React, { MouseEvent, useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import Avatar from "./Avatar";
 import { DesktopMenu, MobileMenu } from "./Menus";
 
-function Header({
+interface HeaderProps {
+  handleDrawerToggle: () => void;
+}
+
+export default function Header({
   handleDrawerToggle,
-  onSignOut,
-  onSyncCurrentUserData,
-  user,
-}) {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+}: HeaderProps) {
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<Element | null>(null);
   const [, setIsUIModeUpdating] = useState(false);
   const [, setIsSigningOut] = useState(false);
   const [uiMode, setUIMode] = useState("light");
 
+  const { data: user } = useTypedSelector(UserProfileRetrieveOneEndpoint.select("me"));
+
   useEffect(() => {
-    if (uiMode !== user.preferences.ui_mode) {
-      setUIMode(user.preferences.ui_mode);
-    }
+    // if (uiMode !== user.preferences.ui_mode) {
+    //   setUIMode(user.preferences.ui_mode);
+    // }
   }, [uiMode, user]);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-  // User info
-  const {
-    first_name: firstName,
-    last_name: lastName,
-    username,
-  } = user;
+  const handleUIModeChange = (_uiMode: string) => {
+    // setIsUIModeUpdating(true);
 
-  const fullName = `${firstName} ${lastName}`;
+    // const payload = { ui_mode: _uiMode };
 
-  const handleUIModeChange = (_uiMode) => {
-    setIsUIModeUpdating(true);
+    // onSyncCurrentUserData("preferences", payload);
 
-    const payload = { ui_mode: _uiMode };
+    // APIService.User.updateCurrentUserPreferences(payload)
+    //   .then((res) => {
+    //     onSyncCurrentUserData("preferences", res);
+    //     setIsUIModeUpdating(false);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err.message);
 
-    onSyncCurrentUserData("preferences", payload);
-
-    APIService.User.updateCurrentUserPreferences(payload)
-      .then((res) => {
-        onSyncCurrentUserData("preferences", res);
-        setIsUIModeUpdating(false);
-      })
-      .catch((err) => {
-        console.log(err.message);
-
-        // Set it back to what it was before request.
-        onSyncCurrentUserData("preferences", { ui_mode: uiMode });
-        setIsUIModeUpdating(false);
-      });
+    //     // Set it back to what it was before request.
+    //     onSyncCurrentUserData("preferences", { ui_mode: uiMode });
+    //     setIsUIModeUpdating(false);
+    //   });
   };
 
-  const handleProfileMenuOpen = (event) => {
+  const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -87,25 +84,38 @@ function Header({
     handleMobileMenuClose();
   };
 
-  const handleMobileMenuOpen = (event) => {
+  const handleMobileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
   const handleSignOutClick = () => {
-    setIsSigningOut(true);
-    onSignOut({
-      onError: () => {
-        setIsSigningOut(false);
-      },
-      onSuccess: () => {
-        window.location.href = new URL("logout/", `${AppSettings.IDENTITY_BASE_URL}/`).href;
-      },
-      noDispatchOnSuccess: true,
-    });
+    // setIsSigningOut(true);
+    // onSignOut({
+    //   onError: () => {
+    //     setIsSigningOut(false);
+    //   },
+    //   onSuccess: () => {
+    //     window.location.href = new URL("logout/", `${AppSettings.IDENTITY_BASE_URL}/`).href;
+    //   },
+    //   noDispatchOnSuccess: true,
+    // });
   };
+
+  if (!user) {
+    return null;
+  }
 
   const menuId = "primary-search-account-menu";
   const mobileMenuId = "primary-search-account-menu-mobile";
+
+  // User info
+  const {
+    first_name: firstName,
+    last_name: lastName,
+    username,
+  } = user;
+
+  const fullName = `${firstName} ${lastName}`;
 
   return (
     <>
@@ -141,14 +151,18 @@ function Header({
               <Button
                 className={classNames("app-transparent-hover", "app-no-text-transform")}
                 size="large"
-                edge="end"
                 sx={{ maxWidth: "220px", paddingRight: 0 }}
                 aria-label="account of current user"
                 aria-controls={menuId}
                 aria-haspopup="true"
                 onClick={handleProfileMenuOpen}
                 color="inherit"
-                startIcon={<Avatar fullName={fullName} />}
+                startIcon={(
+                  <Avatar
+                    fullName={fullName}
+                    profilePhotoUrl=""
+                  />
+                )}
                 endIcon={isMenuOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
               >
                 <Typography noWrap>{fullName}</Typography>
@@ -181,7 +195,6 @@ function Header({
         menuId={menuId}
         handleMenuClose={handleMenuClose}
         handleMobileMenuClose={handleMobileMenuClose}
-        handleProfileMenuOpen={handleProfileMenuOpen}
         isMenuOpen={isMenuOpen}
         onSignOut={handleSignOutClick}
         onUIModeChange={handleUIModeChange}
@@ -192,5 +205,3 @@ function Header({
     </>
   );
 }
-
-export default Header;

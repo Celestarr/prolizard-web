@@ -2,20 +2,19 @@ import "app/styles/index.scss";
 
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-// import enLocale from "date-fns/locale/en-US";
-import App from "app/components/App";
-// import routes from "app/constants/routes";
 import AppSettings from "app/settings";
-import store from "app/store";
+import { store } from "app/store";
 import reportWebVitals from "app/utils/report-web-vitals";
 import { SnackbarProvider } from "notistack";
-import { User } from "oidc-client-ts";
+import { User, WebStorageStateStore } from "oidc-client-ts";
 import React, { useLayoutEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "react-oidc-context";
 import { Provider } from "react-redux";
 import { BrowserRouter, useLocation } from "react-router-dom";
+
+import App from "./App";
 
 const onSigninCallback = (user: User | void) => {
   console.log("onSigninCallback", user);
@@ -36,6 +35,7 @@ const ScrollToTopWrapper: React.FC<{
   return children;
 };
 
+const userStore = new WebStorageStateStore({ store: window.localStorage });
 const container = document.getElementById("root");
 const root = createRoot(container!);
 
@@ -52,6 +52,7 @@ root.render(
                 onSigninCallback={onSigninCallback}
                 redirect_uri={window.location.origin}
                 scope="read write"
+                userStore={userStore}
               >
                 <ScrollToTopWrapper>
                   <App />

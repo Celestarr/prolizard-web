@@ -10,7 +10,15 @@ const AppBarAvatar = styled(MuiAvatar)(() => ({
   width: 30,
 }));
 
-export default function Avatar({ fullName, profilePhotoUrl }) {
+interface AvatarProps {
+  fullName: string;
+  profilePhotoUrl: string;
+}
+
+export default function Avatar({
+  fullName,
+  profilePhotoUrl,
+}: AvatarProps) {
   if (!profilePhotoUrl) {
     return (
       <AppBarAvatar

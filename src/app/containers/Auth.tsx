@@ -3,32 +3,17 @@
 
 import { Box, Paper, useTheme } from "@mui/material";
 import * as classes from "app/styles/classes";
-// import { styled } from "@mui/material/styles";
-// import routes from "app/constants/routes";
-// import AppSettings from "app/settings";
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { Outlet } from "react-router-dom";
 
-// const Copyright = () => {
-//   const currentYear = new Date().getFullYear();
-//   return (
-//     <Typography variant="body2" color="textSecondary" align="center">
-//       &copy;
-//       {" "}
-//       {currentYear}
-//       {" "}
-//       <Link to={routes.HOME}>
-//         {AppSettings.APP_NAME}
-//       </Link>
-//       .
-//       {" "}
-//       All rights reserved.
-//     </Typography>
-//   );
-// };
+interface AuthContainerProps {
+  pageTitle?: string;
+}
 
-function AuthContainer({ pageTitle }) {
+export default function AuthContainer({
+  pageTitle,
+}: AuthContainerProps) {
   const theme = useTheme();
 
   return (
@@ -88,5 +73,3 @@ function AuthContainer({ pageTitle }) {
     </Box>
   );
 }
-
-export default AuthContainer;

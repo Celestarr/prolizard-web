@@ -16,13 +16,18 @@ import {
 import { alpha, styled } from "@mui/material/styles";
 import GlobalSpinner from "app/components/GlobalSpinner";
 import { currentUserSelector } from "app/reducers/selectors";
-import APIService from "app/services/api";
-import React from "react";
+import {
+  useRetrieveAllQuery as useRetrieveAllJobTrackersQuery,
+} from "app/services/job-trackers";
+import {
+  useRetrieveOneQuery as useRetrieveOneUserProfileQuery,
+} from "app/services/user-profiles";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useSelector } from "react-redux";
 
-import DataTable from "./components/DataTable.tsx";
-import EditDialog from "./components/EditDialog.tsx";
+import DataTable from "./components/DataTable";
+// import EditDialog from "./components/EditDialog";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -67,12 +72,17 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function JobTrackerScreen() {
-  const [selectedRows, setSelectedRows] = React.useState([]);
-  const [data, setData] = React.useState();
-  const [isRetrieving, setIsRetrieving] = React.useState(true);
+  const { data: user, isLoading: isUserLoading } = useRetrieveOneUserProfileQuery("me");
+  const [selectedRows, setSelectedRows] = React.useState<number[]>([]);
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(true);
-
-  const user = useSelector(currentUserSelector);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 1,
+    pageSize: 10,
+  });
+  const { data, isLoading } = useRetrieveAllJobTrackersQuery({
+    page: paginationModel.page,
+    pageSize: paginationModel.pageSize,
+  });
 
   const closeEditDialog = () => {
     setIsEditDialogOpen(false);
@@ -80,19 +90,7 @@ export default function JobTrackerScreen() {
 
   const reloadPage = () => {};
 
-  React.useEffect(() => {
-    if (user) {
-      APIService.Career.retrieveJobTrackers()
-        .then((res) => {
-          setData(res);
-        })
-        .finally(() => {
-          setIsRetrieving(false);
-        });
-    }
-  }, [user]);
-
-  if (!user) {
+  if (isLoading || isUserLoading) {
     return <GlobalSpinner />;
   }
 
@@ -103,11 +101,11 @@ export default function JobTrackerScreen() {
     >
       <Helmet title="Job Tracker" />
 
-      <EditDialog
+      {/* <EditDialog
         isOpen={isEditDialogOpen}
         onClose={closeEditDialog}
         onEditSuccess={reloadPage}
-      />
+      /> */}
 
       <Grid
         item
@@ -173,9 +171,9 @@ export default function JobTrackerScreen() {
           <Box sx={{ pt: 4 }}>
             <DataTable
               data={data}
-              isRetrieving={isRetrieving}
-              selectedRows={selectedRows}
-              setSelectedRows={setSelectedRows}
+              isLoading={isLoading}
+              paginationModel={paginationModel}
+              setPaginationModel={setPaginationModel}
             />
           </Box>
         </Container>

@@ -2,6 +2,7 @@ module.exports = {
   extends: ["react-app", "react-app/jest", "airbnb"],
   plugins: ["simple-import-sort"],
   rules: {
+    "import/extensions": "off",
     "jsx-a11y/label-has-associated-control": ["error", {
       required: {
         some: ["nesting", "id"],
@@ -18,6 +19,7 @@ module.exports = {
     quotes: ["error", "double"],
     "react/jsx-filename-extension": [2, { extensions: [".js", ".jsx", ".ts", ".tsx"] }],
     "react/no-unstable-nested-components": "off", // fix
+    "react/require-default-props": "off",
     "default-param-last": "off", // fix
     "react/prop-types": "off",
     "simple-import-sort/imports": "error",

@@ -2,7 +2,7 @@ import {
   lightBlue as primaryColor,
 } from "@mui/material/colors";
 import { createTheme } from "@mui/material/styles";
-import merge from "lodash/merge";
+import { merge } from "lodash";
 
 const PRIMARY = primaryColor[700];
 const PRIMARY_DARK = primaryColor[800];

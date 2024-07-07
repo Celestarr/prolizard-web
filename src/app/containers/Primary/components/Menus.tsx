@@ -21,10 +21,15 @@ import {
 import Routes from "app/constants/routes";
 import makeProfileRoute from "app/utils/makeProfileRoute";
 import classNames from "classnames";
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { MouseEvent } from "react";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 
-function wrapHandleMyProfileClick(navigate, username, setAnchorEl, handleMobileMenuClose) {
+function wrapHandleMyProfileClick(
+  navigate: NavigateFunction,
+  username: string,
+  setAnchorEl: (_anchorEl: null) => void,
+  handleMobileMenuClose: () => void,
+) {
   return function handleMyProfileClick() {
     navigate(makeProfileRoute(username));
     setAnchorEl(null);
@@ -32,12 +37,29 @@ function wrapHandleMyProfileClick(navigate, username, setAnchorEl, handleMobileM
   };
 }
 
-function wrapHandleSettingsClick(navigate, setAnchorEl, handleMobileMenuClose) {
+function wrapHandleSettingsClick(
+  navigate: NavigateFunction,
+  setAnchorEl: (_anchorEl: null) => void,
+  handleMobileMenuClose: () => void,
+) {
   return function handleSettingsClick() {
     navigate(Routes.SETTINGS);
     setAnchorEl(null);
     handleMobileMenuClose();
   };
+}
+
+interface DesktopMenuProps {
+  anchorEl: Element | null;
+  handleMenuClose: () => void;
+  handleMobileMenuClose: () => void;
+  isMenuOpen: boolean;
+  menuId: string;
+  onSignOut: () => void;
+  onUIModeChange: (_uiMode: string) => void;
+  setAnchorEl: (_anchorEl: Element | null) => void;
+  uiMode: string;
+  username: string;
 }
 
 export function DesktopMenu({
@@ -51,7 +73,7 @@ export function DesktopMenu({
   setAnchorEl,
   uiMode,
   username,
-}) {
+}: DesktopMenuProps) {
   const navigate = useNavigate();
 
   return (
@@ -74,10 +96,9 @@ export function DesktopMenu({
         <Typography mb={1} variant="subtitle1" component="div">Appearance</Typography>
         <ToggleButtonGroup
           exclusive
-          variant="outlined"
           size="small"
           aria-label="ui mode switch group"
-          onChange={(e, value) => {
+          onChange={(_, value: string) => {
             if (value) {
               onUIModeChange(value);
             }
@@ -137,6 +158,17 @@ export function DesktopMenu({
   );
 }
 
+interface MobileMenuProps {
+  anchorEl: Element | null;
+  handleMenuClose: () => void;
+  // handleMobileMenuClose: string;
+  handleProfileMenuOpen: (_event: MouseEvent<HTMLElement>) => void;
+  isMenuOpen: boolean;
+  menuId: string;
+  // setAnchorEl: string;
+  // username: string;
+}
+
 export function MobileMenu({
   anchorEl,
   handleMenuClose,
@@ -146,7 +178,7 @@ export function MobileMenu({
   menuId,
   // setAnchorEl,
   // username,
-}) {
+}: MobileMenuProps) {
   return (
     <Menu
       anchorEl={anchorEl}
