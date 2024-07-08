@@ -1,20 +1,14 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import {
   CircularProgress,
   Paper,
 } from "@mui/material";
 import Box from "@mui/material/Box";
-import Checkbox from "@mui/material/Checkbox";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import TableSortLabel from "@mui/material/TableSortLabel";
-import { visuallyHidden } from "@mui/utils";
-import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridPaginationModel,
+  GridRowParams,
+} from "@mui/x-data-grid";
 import { PaginatedResponse } from "app/services/api";
 import { JobTracker } from "app/services/job-trackers";
 import * as React from "react";
@@ -92,6 +86,7 @@ interface DataTableProps {
   isLoading: boolean;
   // selectedRows: number[];
   // setSelectedRows: (_rows: number[]) => void;
+  onRowDoubleClick: (params: GridRowParams) => void;
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<{
       page: number;
@@ -104,6 +99,7 @@ export default function DataTable({
   isLoading,
   // selectedRows,
   // setSelectedRows,
+  onRowDoubleClick,
   paginationModel,
   setPaginationModel,
 }: DataTableProps) {
@@ -116,12 +112,13 @@ export default function DataTable({
     <Box sx={{ width: "100%" }}>
       <DataGrid
         autoHeight
-        rows={data?.results}
         columns={columns}
-        paginationModel={paginationModel}
-        paginationMode="server"
-        rowCount={data?.count}
         loading={isLoading}
+        onRowDoubleClick={onRowDoubleClick}
+        paginationMode="server"
+        paginationModel={paginationModel}
+        rowCount={data?.count}
+        rows={data?.results}
         pageSizeOptions={[10, 25, 50, 100]}
         onPaginationModelChange={setPaginationModel}
       />

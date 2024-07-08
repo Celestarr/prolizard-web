@@ -14,17 +14,21 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
+import { GridRowParams } from "@mui/x-data-grid";
 import DynamicForm from "app/components/DynamicForm";
 import GlobalSpinner from "app/components/GlobalSpinner";
 import { currentUserSelector } from "app/reducers/selectors";
 import {
+  JobTracker,
+  useCreateJobTrackerMutation,
   useGetJobTrackerModelConfigQuery,
   useGetJobTrackersQuery,
+  useUpdateJobTrackerMutation,
 } from "app/services/job-trackers";
 import {
   useGetUserProfileByIdQuery,
 } from "app/services/user-profiles";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useSelector } from "react-redux";
 
@@ -74,10 +78,16 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function JobTrackerScreen() {
   const { data: user, isLoading: isUserLoading } = useGetUserProfileByIdQuery("me");
+  const [dialogInfo, setDialogInfo] = useState<{
+    selectedRow: JobTracker | null;
+    isFormDialogOpen: boolean;
+  }>({
+    selectedRow: null,
+    isFormDialogOpen: false,
+  });
   const [selectedRows, setSelectedRows] = React.useState<number[]>([]);
-  const [isFormDialogOpen, setIsFormDialogOpen] = React.useState(false);
   const [paginationModel, setPaginationModel] = useState({
-    page: 1,
+    page: 0,
     pageSize: 10,
   });
   const { data, isLoading } = useGetJobTrackersQuery({
@@ -86,11 +96,24 @@ export default function JobTrackerScreen() {
   });
 
   const closeFormDialog = () => {
-    setIsFormDialogOpen(false);
+    setDialogInfo({
+      isFormDialogOpen: false,
+      selectedRow: null,
+    });
   };
 
-  const openFormDialog = () => {
-    setIsFormDialogOpen(true);
+  const handleRowDoubleClick = (params: GridRowParams) => {
+    setDialogInfo({
+      isFormDialogOpen: true,
+      selectedRow: params.row as JobTracker,
+    });
+  };
+
+  const handleNewClick = () => {
+    setDialogInfo({
+      isFormDialogOpen: true,
+      selectedRow: null,
+    });
   };
 
   const reloadPage = () => {};
@@ -107,9 +130,12 @@ export default function JobTrackerScreen() {
       <Helmet title="Job Tracker" />
 
       <DynamicForm
-        getModelConfigQuery={useGetJobTrackerModelConfigQuery}
-        isOpen={isFormDialogOpen}
+        createModelInstance={useCreateJobTrackerMutation}
+        getModelConfig={useGetJobTrackerModelConfigQuery}
+        instanceValues={dialogInfo.selectedRow}
+        isOpen={dialogInfo.isFormDialogOpen}
         onClose={closeFormDialog}
+        updateModelInstance={useUpdateJobTrackerMutation}
       />
 
       <Grid
@@ -148,7 +174,7 @@ export default function JobTrackerScreen() {
                 <Grid item>
                   <Button
                     component="label"
-                    onClick={openFormDialog}
+                    onClick={handleNewClick}
                     variant="contained"
                     startIcon={<AddIcon />}
                   >
@@ -176,6 +202,7 @@ export default function JobTrackerScreen() {
             <DataTable
               data={data}
               isLoading={isLoading}
+              onRowDoubleClick={handleRowDoubleClick}
               paginationModel={paginationModel}
               setPaginationModel={setPaginationModel}
             />

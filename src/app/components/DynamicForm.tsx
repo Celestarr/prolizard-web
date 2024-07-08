@@ -1,5 +1,6 @@
 import {
   Alert,
+  Autocomplete,
   Box,
   Button,
   Collapse,
@@ -12,9 +13,19 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { TypedUseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  TypedUseMutation,
+  TypedUseQuery,
+} from "@reduxjs/toolkit/query/react";
 import { FormFieldConfig, ModelConfig } from "app/services/api";
-import { Field, Form, Formik } from "formik";
+import { JobTracker } from "app/services/job-trackers";
+import {
+  Field,
+  Form,
+  Formik,
+  FormikHelpers,
+} from "formik";
+import moment, { Moment } from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import * as Yup from "yup";
 
@@ -50,25 +61,32 @@ const createYupSchema = (config: ModelConfig) => {
           `${field.verbose_name} must be at least ${field.min_length}`,
         );
       }
-    } else if (field.type === "string") {
-      schema[field.name] = Yup.string();
+    } else if (field.type === "string" || field.type === "text") {
+      if (field.choices) {
+        schema[field.name] = Yup.object().shape({
+          value: Yup.string().required(`${field.verbose_name} is required`),
+          label: Yup.string().required(),
+        });
+      } else {
+        schema[field.name] = Yup.string();
 
-      if (field.required) {
-        schema[field.name] = schema[field.name].required(`${field.verbose_name} is required`);
-      }
+        if (field.required) {
+          schema[field.name] = schema[field.name].required(`${field.verbose_name} is required`);
+        }
 
-      if (field.max_length) {
-        schema[field.name] = schema[field.name].max(
-          field.max_length,
-          `${field.verbose_name} must be at most ${field.max_length} characters`,
-        );
-      }
+        if (field.max_length) {
+          schema[field.name] = schema[field.name].max(
+            field.max_length,
+            `${field.verbose_name} must be at most ${field.max_length} characters`,
+          );
+        }
 
-      if (field.min_length) {
-        schema[field.name] = schema[field.name].min(
-          field.min_length,
-          `${field.verbose_name} must be at least ${field.min_length} characters`,
-        );
+        if (field.min_length) {
+          schema[field.name] = schema[field.name].min(
+            field.min_length,
+            `${field.verbose_name} must be at least ${field.min_length} characters`,
+          );
+        }
       }
     }
     // Add more field types as needed
@@ -77,29 +95,120 @@ const createYupSchema = (config: ModelConfig) => {
   return Yup.object().shape(schema);
 };
 
+interface AutocompleteValue {
+  label: string;
+  value: string;
+}
+
 type FormValues = {
-  [key: string]: string | null;
+  [key: string]: AutocompleteValue | Moment | null | string | undefined;
 };
 
+function transformFormValuesForSubmission(values: FormValues): Record<string, string | null> {
+  return Object.entries(values).reduce((acc, [key, value]) => {
+    if (typeof value === "number") {
+      acc[key] = value;
+    } else if (typeof value === "string") {
+      acc[key] = value;
+    } else if (value === undefined || value === null) {
+      acc[key] = null;
+    } else if (moment.isMoment(value)) {
+      acc[key] = value.format("YYYY-MM-DD");
+    } else if (typeof value === "object" && "value" in value) {
+      acc[key] = (value as AutocompleteValue).value as string;
+    } else {
+      // Handle any other cases or throw an error
+      console.warn(`Unexpected value type for key ${key}:`, value);
+      acc[key] = null;
+    }
+    return acc;
+  }, {} as Record<string, string | null>);
+}
+
+function transformInstanceValuesForForm(
+  values: JobTracker | null | undefined,
+  modelConfig: ModelConfig,
+): Record<string, AutocompleteValue | Moment | string | null> | null | undefined {
+  if (!values) {
+    return values;
+  }
+
+  return Object.entries(values).reduce((acc, [key, value]) => {
+    if (key === "id") {
+      acc[key] = value;
+
+      return acc;
+    }
+
+    const field = modelConfig.fields.find((f) => f.name === key) as FormFieldConfig;
+
+    switch (field.type) {
+      case "date":
+        acc[key] = value ? moment(value) : null;
+        break;
+      case "email":
+        acc[key] = value || "";
+        break;
+      case "integer":
+        acc[key] = value;
+        break;
+      case "string":
+      case "text":
+        if (field.choices) {
+          const choice = field.choices.find((x) => x[0] === value);
+          acc[key] = value && choice
+            ? { label: choice[1], value: choice[0] }
+            : null;
+        } else {
+          acc[key] = value || "";
+        }
+        break;
+      default:
+        console.warn(`Unexpected value type for key ${key}:`, value);
+        acc[key] = null;
+    }
+
+    return acc;
+  }, {} as Record<string, AutocompleteValue | Moment | string | null>);
+}
+
 interface DynamicFormProps {
-  getModelConfigQuery: TypedUseQuery<ModelConfig, void, any>;
-  instanceValues?: FormValues;
+  createModelInstance: TypedUseMutation<JobTracker, Partial<JobTracker>, any>;
+  getModelConfig: TypedUseQuery<ModelConfig, void, any>;
+  instanceValues?: JobTracker | null;
   isOpen: boolean;
   onClose: () => void;
+  updateModelInstance: TypedUseMutation<JobTracker, Partial<JobTracker>, any>;
+}
+
+function getFieldInitialValue(field: FormFieldConfig) {
+  if (field.type === "string" || field.type === "text") {
+    if (field.choices) {
+      return null;
+    }
+
+    return "";
+  }
+
+  return null;
 }
 
 export default function DynamicForm({
-  getModelConfigQuery,
+  createModelInstance,
+  getModelConfig,
   instanceValues,
   isOpen,
   onClose,
+  updateModelInstance,
 }: DynamicFormProps) {
   const theme = useTheme();
   const {
     data,
     error: loadingError,
     isLoading,
-  } = getModelConfigQuery();
+  } = getModelConfig();
+  const [createItem] = createModelInstance();
+  const [updateItem] = updateModelInstance();
   const [isDialogLocked, setIsDialogLocked] = useState(false);
   const [error, setError] = useState({ message: null, show: false });
   const [alertBoxMargin, setAlertBoxMargin] = useState(0);
@@ -113,6 +222,12 @@ export default function DynamicForm({
   if (loadingError) {
     return <div>ERR</div>;
   }
+
+  const resetDialog = () => {
+    setIsDialogLocked(false);
+    setError({ message: null, show: false });
+    setAlertBoxMargin(0);
+  };
 
   const handleAlertCollapseEnter = () => {
     setAlertBoxMargin(2);
@@ -134,10 +249,36 @@ export default function DynamicForm({
     }
   };
 
-  const initialValues: FormValues = instanceValues || data.fields.reduce((acc, field) => {
-    acc[field.name] = field.type === "string" ? "" : null;
-    return acc;
-  }, {} as FormValues);
+  const handleFormSubmit = (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
+    setIsDialogLocked(true);
+
+    const transformedValues = transformFormValuesForSubmission(values);
+
+    const mutation = transformedValues.id ? updateItem : createItem;
+
+    mutation(transformedValues)
+      .then(({ error: err }) => {
+        if (err) {
+          throw err;
+        } else {
+          resetDialog();
+          onClose();
+        }
+      })
+      .catch((err) => {
+        setError({ message: err.message, show: true });
+        setIsDialogLocked(false);
+        setSubmitting(false);
+      });
+  };
+
+  const initialValues: FormValues = (
+    transformInstanceValuesForForm(instanceValues, data)
+    || data.fields.reduce((acc, field) => {
+      acc[field.name] = getFieldInitialValue(field);
+      return acc;
+    }, {} as FormValues)
+  ) as FormValues;
 
   const validationSchema = createYupSchema(data);
 
@@ -154,11 +295,7 @@ export default function DynamicForm({
       <Formik
         enableReinitialize
         initialValues={initialValues}
-        onSubmit={(values, { setSubmitting }) => {
-          // Handle form submission
-          console.log(values);
-          setSubmitting(false);
-        }}
+        onSubmit={handleFormSubmit}
         validationSchema={validationSchema}
       >
         {({
@@ -231,7 +368,10 @@ export default function DynamicForm({
                             value={values[field.name]}
                           />
                         )}
-                        {field.type === "string" && (
+                        {((
+                          field.type === "string"
+                          || field.type === "text"
+                        ) && typeof field.choices === "undefined") && (
                           <TextField
                             autoFocus={row.row === 1 && !fieldIndex}
                             error={!!(touched[field.name] && errors[field.name])}
@@ -244,10 +384,49 @@ export default function DynamicForm({
                             }}
                             label={field.verbose_name}
                             margin="normal"
+                            multiline={field.type === "text"}
                             name={field.name}
                             required={field.required}
+                            rows={field.type === "text" ? 4 : undefined}
                             value={values[field.name]}
                             variant="outlined"
+                          />
+                        )}
+                        {(field.type === "string" && typeof field.choices !== "undefined") && (
+                          <Autocomplete
+                            autoFocus={row.row === 1 && !fieldIndex}
+                            disablePortal
+                            fullWidth
+                            isOptionEqualToValue={(opt, val) => {
+                              if (!val) {
+                                return false;
+                              }
+
+                              return (opt as AutocompleteValue).value === (val as AutocompleteValue).value;
+                            }}
+                            onBlur={handleBlur}
+                            onChange={(_, value) => {
+                              setFieldValue(field.name, value);
+                            }}
+                            options={field.choices.map((choice) => ({
+                              label: choice[1],
+                              value: choice[0],
+                            }))}
+                            renderInput={(params) => (
+                              <TextField
+                                // eslint-disable-next-line react/jsx-props-no-spreading
+                                {...params}
+                                id={field.name}
+                                error={!!(touched[field.name] && errors[field.name])}
+                                helperText={touched[field.name] && errors[field.name] ? errors[field.name] : null}
+                                label={field.verbose_name}
+                                margin="normal"
+                                name={field.name}
+                                required={field.required}
+                                variant="outlined"
+                              />
+                            )}
+                            value={values[field.name]}
                           />
                         )}
                       </Grid>

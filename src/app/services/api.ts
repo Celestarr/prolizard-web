@@ -4,6 +4,8 @@ import { RootState } from "app/store";
 import { User } from "oidc-client-ts";
 
 export interface FormFieldConfig {
+  choices?: string[][];
+  help_text?: string;
   max_length?: number; // for string
   min_length?: number; // for string
   max_value?: number; // for string
@@ -11,7 +13,7 @@ export interface FormFieldConfig {
   name: string;
   regex?: string;
   required: boolean;
-  type: "date" | "datetime" | "email" | "integer" | "string";
+  type: "date" | "datetime" | "email" | "integer" | "string" | "text";
   verbose_name: string;
 }
 
@@ -64,7 +66,7 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-const baseQueryWithRetry = retry(baseQuery, { maxRetries: 3 });
+const baseQueryWithRetry = retry(baseQuery, { maxRetries: 2 });
 
 /**
  * Create a base API to inject endpoints into elsewhere.
@@ -80,7 +82,7 @@ export const api = createApi({
    * Otherwise, a single API definition should be used in order to support tag invalidation,
    * among other features
    */
-  reducerPath: "splitApi",
+  reducerPath: "primaryApi",
   /**
    * A bare bones base query would just be `baseQuery: fetchBaseQuery({ baseUrl: '/' })`
    */
