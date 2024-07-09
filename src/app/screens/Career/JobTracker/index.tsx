@@ -14,12 +14,18 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
-import { GridRowParams } from "@mui/x-data-grid";
+import {
+  GridRowParams,
+  GridRowSelectionModel,
+  GridSortModel,
+} from "@mui/x-data-grid";
+import ConfirmationDialog from "app/components/ConfirmationDialog";
 import DynamicForm from "app/components/DynamicForm";
 import GlobalSpinner from "app/components/GlobalSpinner";
 import { currentUserSelector } from "app/reducers/selectors";
+import { ModelInstance } from "app/services/api";
 import {
-  JobTracker,
+  useBulkDeleteJobTrackerMutation,
   useCreateJobTrackerMutation,
   useGetJobTrackerModelConfigQuery,
   useGetJobTrackersQuery,
@@ -77,23 +83,52 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function JobTrackerScreen() {
+  const [bulkDelete] = useBulkDeleteJobTrackerMutation();
   const { data: user, isLoading: isUserLoading } = useGetUserProfileByIdQuery("me");
   const [dialogInfo, setDialogInfo] = useState<{
-    selectedRow: JobTracker | null;
+    selectedRow: ModelInstance | null;
     isFormDialogOpen: boolean;
   }>({
     selectedRow: null,
     isFormDialogOpen: false,
   });
-  const [selectedRows, setSelectedRows] = React.useState<number[]>([]);
+  const {
+    data: modelConfig,
+  } = useGetJobTrackerModelConfigQuery();
+  const [isRemoveConfirmationDialogOpen, setIsRemoveConfirmationDialogOpen] = useState(false);
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
   });
-  const { data, isLoading } = useGetJobTrackersQuery({
+  const {
+    data,
+    isFetching,
+    isLoading,
+  } = useGetJobTrackersQuery({
     page: paginationModel.page,
     pageSize: paginationModel.pageSize,
+    sortModel,
   });
+
+  const handleBulkDelete = () => bulkDelete(selectionModel.map((x) => x as number));
+
+  const openRemoveConfirmationDialog = () => {
+    setIsRemoveConfirmationDialogOpen(true);
+  };
+
+  const closeRemoveConfirmationDialog = () => {
+    setIsRemoveConfirmationDialogOpen(false);
+  };
+
+  const handleSelectionModelChange = (newSelectionModel: GridRowSelectionModel) => {
+    setSelectionModel(newSelectionModel);
+  };
+
+  const handleSortModelChange = (newSortModel: GridSortModel) => {
+    setSortModel(newSortModel);
+  };
 
   const closeFormDialog = () => {
     setDialogInfo({
@@ -105,7 +140,7 @@ export default function JobTrackerScreen() {
   const handleRowDoubleClick = (params: GridRowParams) => {
     setDialogInfo({
       isFormDialogOpen: true,
-      selectedRow: params.row as JobTracker,
+      selectedRow: params.row as ModelInstance,
     });
   };
 
@@ -122,6 +157,10 @@ export default function JobTrackerScreen() {
     return <GlobalSpinner />;
   }
 
+  if (!modelConfig) {
+    return null;
+  }
+
   return (
     <Grid
       container
@@ -136,6 +175,14 @@ export default function JobTrackerScreen() {
         isOpen={dialogInfo.isFormDialogOpen}
         onClose={closeFormDialog}
         updateModelInstance={useUpdateJobTrackerMutation}
+      />
+
+      <ConfirmationDialog
+        isOpen={isRemoveConfirmationDialogOpen}
+        modelName={modelConfig.verbose_name}
+        onClose={closeRemoveConfirmationDialog}
+        onConfirm={handleBulkDelete}
+        selectedCount={selectionModel.length}
       />
 
       <Grid
@@ -181,16 +228,17 @@ export default function JobTrackerScreen() {
                     New
                   </Button>
                 </Grid>
-                {selectedRows.length ? (
+                {selectionModel.length ? (
                   <Grid item>
                     <Button
                       color="error"
                       component="label"
+                      onClick={openRemoveConfirmationDialog}
                       variant="contained"
                       startIcon={<DeleteIcon />}
                     >
                       Remove
-                      {` (${selectedRows.length})`}
+                      {` (${selectionModel.length})`}
                     </Button>
                   </Grid>
                 ) : null}
@@ -201,9 +249,12 @@ export default function JobTrackerScreen() {
           <Box sx={{ pt: 4 }}>
             <DataTable
               data={data}
-              isLoading={isLoading}
+              isLoading={isFetching}
               onRowDoubleClick={handleRowDoubleClick}
+              onSelectionModelChange={handleSelectionModelChange}
+              onSortModelChange={handleSortModelChange}
               paginationModel={paginationModel}
+              selectionModel={selectionModel}
               setPaginationModel={setPaginationModel}
             />
           </Box>

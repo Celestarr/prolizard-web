@@ -17,8 +17,12 @@ import {
   TypedUseMutation,
   TypedUseQuery,
 } from "@reduxjs/toolkit/query/react";
-import { FormFieldConfig, ModelConfig } from "app/services/api";
-import { JobTracker } from "app/services/job-trackers";
+import {
+  FormFieldConfig,
+  ModelConfig,
+  ModelInstance,
+  ModelInstanceFieldValue,
+} from "app/services/api";
 import {
   Field,
   Form,
@@ -100,11 +104,13 @@ interface AutocompleteValue {
   value: string;
 }
 
+type FormFieldValue = AutocompleteValue | Moment | ModelInstanceFieldValue | undefined;
+
 type FormValues = {
-  [key: string]: AutocompleteValue | Moment | null | string | undefined;
+  [key: string]: FormFieldValue;
 };
 
-function transformFormValuesForSubmission(values: FormValues): Record<string, string | null> {
+function transformFormValuesForSubmission(values: FormValues): ModelInstance {
   return Object.entries(values).reduce((acc, [key, value]) => {
     if (typeof value === "number") {
       acc[key] = value;
@@ -122,20 +128,20 @@ function transformFormValuesForSubmission(values: FormValues): Record<string, st
       acc[key] = null;
     }
     return acc;
-  }, {} as Record<string, string | null>);
+  }, {} as ModelInstance);
 }
 
 function transformInstanceValuesForForm(
-  values: JobTracker | null | undefined,
+  values: ModelInstance | null | undefined,
   modelConfig: ModelConfig,
-): Record<string, AutocompleteValue | Moment | string | null> | null | undefined {
+): FormValues | null | undefined {
   if (!values) {
     return values;
   }
 
   return Object.entries(values).reduce((acc, [key, value]) => {
     if (key === "id") {
-      acc[key] = value;
+      acc[key] = value as number;
 
       return acc;
     }
@@ -147,10 +153,10 @@ function transformInstanceValuesForForm(
         acc[key] = value ? moment(value) : null;
         break;
       case "email":
-        acc[key] = value || "";
+        acc[key] = (value || "") as string;
         break;
       case "integer":
-        acc[key] = value;
+        acc[key] = value as number;
         break;
       case "string":
       case "text":
@@ -160,7 +166,7 @@ function transformInstanceValuesForForm(
             ? { label: choice[1], value: choice[0] }
             : null;
         } else {
-          acc[key] = value || "";
+          acc[key] = (value || "") as string;
         }
         break;
       default:
@@ -169,16 +175,16 @@ function transformInstanceValuesForForm(
     }
 
     return acc;
-  }, {} as Record<string, AutocompleteValue | Moment | string | null>);
+  }, {} as FormValues);
 }
 
 interface DynamicFormProps {
-  createModelInstance: TypedUseMutation<JobTracker, Partial<JobTracker>, any>;
+  createModelInstance: TypedUseMutation<ModelInstance, Partial<ModelInstance>, any>;
   getModelConfig: TypedUseQuery<ModelConfig, void, any>;
-  instanceValues?: JobTracker | null;
+  instanceValues?: ModelInstance | null;
   isOpen: boolean;
   onClose: () => void;
-  updateModelInstance: TypedUseMutation<JobTracker, Partial<JobTracker>, any>;
+  updateModelInstance: TypedUseMutation<ModelInstance, Partial<ModelInstance>, any>;
 }
 
 function getFieldInitialValue(field: FormFieldConfig) {
@@ -296,6 +302,7 @@ export default function DynamicForm({
         enableReinitialize
         initialValues={initialValues}
         onSubmit={handleFormSubmit}
+        validateOnChange={false}
         validationSchema={validationSchema}
       >
         {({

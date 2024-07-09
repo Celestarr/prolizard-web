@@ -8,53 +8,13 @@ import {
   GridColDef,
   GridPaginationModel,
   GridRowParams,
+  GridRowSelectionModel,
+  GridSortModel,
 } from "@mui/x-data-grid";
-import { PaginatedResponse } from "app/services/api";
-import { JobTracker } from "app/services/job-trackers";
-import * as React from "react";
-import { useState } from "react";
+import { ModelInstance, PaginatedResponse } from "app/services/api";
+import React, { useState } from "react";
 
-// function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-//   if (b[orderBy] < a[orderBy]) {
-//     return -1;
-//   }
-//   if (b[orderBy] > a[orderBy]) {
-//     return 1;
-//   }
-//   return 0;
-// }
-
-type Order = "asc" | "desc";
-
-// function getComparator<Key extends keyof any>(
-//   order: Order,
-//   orderBy: Key,
-// ): (
-//   a: { [key in Key]: number | string },
-//   b: { [key in Key]: number | string },
-// ) => number {
-//   return order === "desc"
-//     ? (a, b) => descendingComparator(a, b, orderBy)
-//     : (a, b) => -descendingComparator(a, b, orderBy);
-// }
-
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
-// function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
-//   const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-//   stabilizedThis.sort((a, b) => {
-//     const order = comparator(a[0], b[0]);
-//     if (order !== 0) {
-//       return order;
-//     }
-//     return a[1] - b[1];
-//   });
-//   return stabilizedThis.map((el) => el[0]);
-// }
-
-const columns: readonly GridColDef<JobTracker>[] = [
+const columns: readonly GridColDef<ModelInstance>[] = [
   {
     field: "id",
     flex: 1,
@@ -82,45 +42,50 @@ const columns: readonly GridColDef<JobTracker>[] = [
 ];
 
 interface DataTableProps {
-  data: PaginatedResponse<JobTracker> | undefined;
+  data: PaginatedResponse<ModelInstance> | undefined;
   isLoading: boolean;
-  // selectedRows: number[];
-  // setSelectedRows: (_rows: number[]) => void;
   onRowDoubleClick: (params: GridRowParams) => void;
+  onSelectionModelChange: (_model: GridRowSelectionModel) => void;
+  onSortModelChange: (_model: GridSortModel) => void;
   paginationModel: GridPaginationModel;
+  selectionModel: GridRowSelectionModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<{
       page: number;
       pageSize: number;
   }>>;
+  // sortModel: GridSortModel;
 }
 
 export default function DataTable({
   data,
   isLoading,
-  // selectedRows,
-  // setSelectedRows,
   onRowDoubleClick,
+  onSelectionModelChange,
+  onSortModelChange,
   paginationModel,
+  selectionModel,
   setPaginationModel,
+  // sortModel,
 }: DataTableProps) {
-  const [order, setOrder] = React.useState<Order>("asc");
-  const [orderBy, setOrderBy] = React.useState<keyof JobTracker>("id");
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
   return (
     <Box sx={{ width: "100%" }}>
       <DataGrid
         autoHeight
+        checkboxSelection
         columns={columns}
+        getRowId={(row) => row.id as number}
         loading={isLoading}
+        onPaginationModelChange={setPaginationModel}
         onRowDoubleClick={onRowDoubleClick}
+        onRowSelectionModelChange={onSelectionModelChange}
+        onSortModelChange={onSortModelChange}
+        pageSizeOptions={[10, 25, 50, 100]}
         paginationMode="server"
         paginationModel={paginationModel}
         rowCount={data?.count}
         rows={data?.results}
-        pageSizeOptions={[10, 25, 50, 100]}
-        onPaginationModelChange={setPaginationModel}
+        rowSelectionModel={selectionModel}
+        sortingMode="server"
       />
     </Box>
   );

@@ -1,3 +1,4 @@
+import { GridSortModel } from "@mui/x-data-grid";
 import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 import AppSettings from "app/settings";
 import { RootState } from "app/store";
@@ -40,6 +41,26 @@ export interface PaginatedResponse<T> {
 export interface PaginatedRequestQuery {
   page: number;
   pageSize: number;
+  sortModel?: GridSortModel;
+}
+
+export type ModelInstanceFieldValue = null | number | string;
+
+export interface ModelInstance {
+  [key: string]: ModelInstanceFieldValue | ModelInstance;
+}
+
+export function transformSortModelToQueryString(sortModel: GridSortModel | undefined): string {
+  if (!sortModel || sortModel.length === 0) {
+    return "";
+  }
+
+  const orderingParams = sortModel.map((sort) => {
+    const prefix = sort.sort === "desc" ? "-" : "";
+    return `${prefix}${sort.field}`;
+  });
+
+  return `ordering=${orderingParams.join(",")}`;
 }
 
 function getUser() {
