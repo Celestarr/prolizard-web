@@ -14,34 +14,8 @@ import {
 import { ModelInstance, PaginatedResponse } from "app/services/api";
 import React, { useState } from "react";
 
-const columns: readonly GridColDef<ModelInstance>[] = [
-  {
-    field: "id",
-    flex: 1,
-    headerName: "ID",
-    minWidth: 30,
-  },
-  {
-    field: "position_title",
-    flex: 2,
-    headerName: "Position",
-    minWidth: 60,
-  },
-  {
-    field: "company_name",
-    flex: 2,
-    headerName: "Company",
-    minWidth: 70,
-  },
-  {
-    field: "status",
-    flex: 1,
-    headerName: "Status",
-    minWidth: 60,
-  },
-];
-
 interface DataTableProps {
+  columns: GridColDef<ModelInstance>[];
   data: PaginatedResponse<ModelInstance> | undefined;
   isLoading: boolean;
   onRowDoubleClick: (params: GridRowParams) => void;
@@ -53,10 +27,10 @@ interface DataTableProps {
       page: number;
       pageSize: number;
   }>>;
-  // sortModel: GridSortModel;
 }
 
 export default function DataTable({
+  columns,
   data,
   isLoading,
   onRowDoubleClick,
@@ -65,7 +39,6 @@ export default function DataTable({
   paginationModel,
   selectionModel,
   setPaginationModel,
-  // sortModel,
 }: DataTableProps) {
   return (
     <Box sx={{ width: "100%" }}>

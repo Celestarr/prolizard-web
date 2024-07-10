@@ -31,6 +31,11 @@ export interface ModelConfig {
   verbose_name: string;
 }
 
+export interface BulkDeleteResponse {
+  count?: number;
+  message: string;
+}
+
 export interface PaginatedResponse<T> {
   count: number;
   next: null | string;
@@ -41,6 +46,7 @@ export interface PaginatedResponse<T> {
 export interface PaginatedRequestQuery {
   page: number;
   pageSize: number;
+  query?: string;
   sortModel?: GridSortModel;
 }
 
@@ -60,7 +66,7 @@ export function transformSortModelToQueryString(sortModel: GridSortModel | undef
     return `${prefix}${sort.field}`;
   });
 
-  return `ordering=${orderingParams.join(",")}`;
+  return `&ordering=${orderingParams.join(",")}`;
 }
 
 function getUser() {

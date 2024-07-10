@@ -17,6 +17,7 @@ import {
   TypedUseMutation,
   TypedUseQuery,
 } from "@reduxjs/toolkit/query/react";
+import DatePicker from "app/components/DatePicker";
 import {
   FormFieldConfig,
   ModelConfig,
@@ -32,8 +33,6 @@ import {
 import moment, { Moment } from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import * as Yup from "yup";
-
-import DatePicker from "./DatePicker";
 
 const createYupSchema = (config: ModelConfig) => {
   const schema: any = {};
@@ -146,7 +145,11 @@ function transformInstanceValuesForForm(
       return acc;
     }
 
-    const field = modelConfig.fields.find((f) => f.name === key) as FormFieldConfig;
+    const field = modelConfig.fields.find((f) => f.name === key);
+
+    if (!field) {
+      return acc;
+    }
 
     switch (field.type) {
       case "date":
@@ -178,7 +181,7 @@ function transformInstanceValuesForForm(
   }, {} as FormValues);
 }
 
-interface DynamicFormProps {
+interface EditFormDialogProps {
   createModelInstance: TypedUseMutation<ModelInstance, Partial<ModelInstance>, any>;
   getModelConfig: TypedUseQuery<ModelConfig, void, any>;
   instanceValues?: ModelInstance | null;
@@ -199,14 +202,14 @@ function getFieldInitialValue(field: FormFieldConfig) {
   return null;
 }
 
-export default function DynamicForm({
+export default function EditFormDialog({
   createModelInstance,
   getModelConfig,
   instanceValues,
   isOpen,
   onClose,
   updateModelInstance,
-}: DynamicFormProps) {
+}: EditFormDialogProps) {
   const theme = useTheme();
   const {
     data,

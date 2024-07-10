@@ -2,6 +2,7 @@ import { retry } from "@reduxjs/toolkit/query/react";
 
 import {
   api,
+  BulkDeleteResponse,
   ModelConfig,
   ModelInstance,
   PaginatedRequestQuery,
@@ -14,7 +15,7 @@ const TAG = "job-tracker";
 
 export const jobTrackers = api.injectEndpoints({
   endpoints: (build) => ({
-    bulkDeleteJobTracker: build.mutation<{ success: boolean; id: number }, number[]>({
+    bulkDeleteJobTracker: build.mutation<BulkDeleteResponse, number[]>({
       query: (ids) => ({
         url: `${URL_PATH}/bulk-delete/`,
         method: "POST",
@@ -48,8 +49,17 @@ export const jobTrackers = api.injectEndpoints({
       providesTags: (_item, _err) => [{ type: TAG, id: "model-config" }],
     }),
     getJobTrackers: build.query<PaginatedResponse<ModelInstance>, PaginatedRequestQuery>({
-      query: ({ page, pageSize, sortModel }) => ({
-        url: `${URL_PATH}?page=${page + 1}&page_size=${pageSize}&${transformSortModelToQueryString(sortModel)}`,
+      query: ({
+        page,
+        pageSize,
+        query,
+        sortModel,
+      }) => ({
+        url: (
+          `${URL_PATH}?page=${page + 1}&page_size=${pageSize}`
+          + `${transformSortModelToQueryString(sortModel)}`
+          + `${query ? `&search=${query}` : ""}`
+        ),
       }),
       providesTags: (result) => (typeof result !== "undefined" ? [
         ...result.results.map(({ id }) => ({ type: TAG, id: id as number }) as const),
