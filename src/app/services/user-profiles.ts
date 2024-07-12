@@ -1,6 +1,11 @@
 import { retry } from "@reduxjs/toolkit/query/react";
 
-import { api, PaginatedResponse } from "./api";
+import {
+  api,
+  ModelInstance,
+  PaginatedResponse,
+  UserPreference,
+} from "./api";
 import { Country, Gender } from "./common";
 
 export interface AcademicRecord {
@@ -55,6 +60,7 @@ export interface UserProfile {
   joined_at: string;
   languages: Language[];
   last_name: string;
+  preferences?: UserPreference;
   projects: Project[];
   publications: Publication[];
   skills: Skill[];
@@ -70,13 +76,25 @@ export const userProfilesApi = api.injectEndpoints({
   endpoints: (build) => ({
     getUserProfileById: build.query<UserProfile, number | string>({
       query: (id) => `${URL_PATH}/${id}`,
-      providesTags: (_post, _err, id) => [{ type: TAG, id }],
+      providesTags: (_item, _err, id) => [{ type: TAG, id }],
+    }),
+    updatePreferences: build.mutation<ModelInstance, Partial<ModelInstance>>({
+      query(data) {
+        const { id, ...body } = data;
+        return {
+          url: `${URL_PATH}/preferences/`,
+          method: "PATCH",
+          body,
+        };
+      },
+      invalidatesTags: () => [{ type: TAG, id: "me" }],
     }),
   }),
 });
 
 export const {
   useGetUserProfileByIdQuery,
+  useUpdatePreferencesMutation,
 } = userProfilesApi;
 
 export const {

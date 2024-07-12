@@ -16,6 +16,8 @@ import { DRAWER_WIDTH } from "app/constants/ui.ts";
 import AppLogo from "app/images/myfolab-icon-310x310.png";
 import {
   getUserProfileById,
+  useGetUserProfileByIdQuery,
+  useUpdatePreferencesMutation,
 } from "app/services/user-profiles";
 import AppSettings from "app/settings";
 import { useTypedSelector } from "app/store";
@@ -33,42 +35,23 @@ interface HeaderProps {
 export default function Header({
   handleDrawerToggle,
 }: HeaderProps) {
+  const {
+    data: user,
+  } = useGetUserProfileByIdQuery("me");
+  const [updatePreferences] = useUpdatePreferencesMutation();
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<Element | null>(null);
-  const [, setIsUIModeUpdating] = useState(false);
   const [, setIsSigningOut] = useState(false);
-  const [uiMode, setUIMode] = useState("light");
-
-  const { data: user } = useTypedSelector(getUserProfileById.select("me"));
-
-  useEffect(() => {
-    // if (uiMode !== user.preferences.ui_mode) {
-    //   setUIMode(user.preferences.ui_mode);
-    // }
-  }, [uiMode, user]);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const handleUIModeChange = (_uiMode: string) => {
-    // setIsUIModeUpdating(true);
-
-    // const payload = { ui_mode: _uiMode };
-
-    // onSyncCurrentUserData("preferences", payload);
-
-    // APIService.User.updateCurrentUserPreferences(payload)
-    //   .then((res) => {
-    //     onSyncCurrentUserData("preferences", res);
-    //     setIsUIModeUpdating(false);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err.message);
-
-    //     // Set it back to what it was before request.
-    //     onSyncCurrentUserData("preferences", { ui_mode: uiMode });
-    //     setIsUIModeUpdating(false);
-    //   });
+    updatePreferences({
+      ui_mode: _uiMode,
+    })
+      .then(() => {})
+      .catch(() => {});
   };
 
   const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
@@ -101,7 +84,7 @@ export default function Header({
     // });
   };
 
-  if (!user) {
+  if (!user || !user.preferences) {
     return null;
   }
 
@@ -199,7 +182,7 @@ export default function Header({
         onSignOut={handleSignOutClick}
         onUIModeChange={handleUIModeChange}
         setAnchorEl={setAnchorEl}
-        uiMode={uiMode}
+        uiMode={user.preferences.ui_mode}
         username={username}
       />
     </>

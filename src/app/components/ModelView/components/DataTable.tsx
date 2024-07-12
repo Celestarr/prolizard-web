@@ -50,6 +50,13 @@ export default function DataTable({
         loading={isLoading}
         onPaginationModelChange={setPaginationModel}
         onRowDoubleClick={onRowDoubleClick}
+        onCellClick={(params, event) => {
+          if (params.field === "notes") {
+            // eslint-disable-next-line no-param-reassign
+            event.stopPropagation();
+            console.log("here");
+          }
+        }}
         onRowSelectionModelChange={onSelectionModelChange}
         onSortModelChange={onSortModelChange}
         pageSizeOptions={[10, 25, 50, 100]}

@@ -121,7 +121,7 @@ export default function ModelView({
   const [searchInputValue, setSearchInputValue] = useState<string | undefined>("");
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
-    pageSize: 10,
+    pageSize: 25,
   });
   const {
     data,

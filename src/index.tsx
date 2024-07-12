@@ -1,4 +1,5 @@
 import "app/styles/index.scss";
+import "flag-icons/sass/flag-icons.scss";
 
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";

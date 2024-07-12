@@ -24,11 +24,9 @@ export default function App() {
   const [hasTriedSignin, setHasTriedSignin] = React.useState(false);
   const routes = useRoutes(getRoutes(auth.isAuthenticated));
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const [uiMode, setUIMode] = useState<"dark" | "light" | "system">("system");
   const [themeMode, setThemeMode] = useState<"dark" | "light">("light");
-  const dispatch = useAppDispatch();
   const {
-    data,
+    data: user,
     error,
     isLoading,
   } = useGetUserProfileByIdQuery("me", { skip: !auth.isAuthenticated });
@@ -57,14 +55,14 @@ export default function App() {
   }, [auth.events, auth.signinSilent]);
 
   useEffect(() => {
-    if (uiMode !== themeMode) {
-      if (uiMode === "system") {
+    if (user && user.preferences && user.preferences.ui_mode !== themeMode) {
+      if (user.preferences.ui_mode === "system") {
         setThemeMode(prefersDarkMode ? "dark" : "light");
       } else {
-        setThemeMode(uiMode);
+        setThemeMode(user.preferences.ui_mode);
       }
     }
-  }, [uiMode]);
+  }, [user]);
 
   const theme = useMemo(
     () => themes[themeMode],

@@ -4,12 +4,20 @@ import {
   Close as CloseIcon,
   ContactMail as ContactMailIcon,
   Edit as EditIcon,
+  Info as InfoIcon,
   LocalOffer as LocalOfferIcon,
 } from "@mui/icons-material";
-import { Chip } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import {
+  Box,
+  ButtonGroup,
+  Chip,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
+import { GridActionsCellItem, GridColDef, GridRowParams } from "@mui/x-data-grid";
+import EmptyCell from "app/components/EmptyCell";
 import ModelView from "app/components/ModelView";
-import { ModelInstance } from "app/services/api";
+import { CountryChoice, ModelInstance } from "app/services/api";
 import {
   useBulkDeleteJobTrackerMutation,
   useCreateJobTrackerMutation,
@@ -58,7 +66,7 @@ export default function JobTrackerScreen() {
     {
       field: "position_title",
       filterable: false,
-      flex: 3,
+      flex: 4,
       headerName: "Position",
     },
     {
@@ -66,6 +74,46 @@ export default function JobTrackerScreen() {
       filterable: false,
       flex: 3,
       headerName: "Organization",
+    },
+    {
+      field: "country",
+      filterable: false,
+      flex: 2,
+      headerName: "Country",
+      // eslint-disable-next-line arrow-body-style
+      renderCell: (params) => {
+        if (!params.value) {
+          return <EmptyCell />;
+        }
+
+        const value = params.value as CountryChoice;
+
+        return (
+          <>
+            <span className={`fi fi-${value.iso_3166_1_alpha_2_code.toLowerCase()} fis`} />
+            <Box component="span" sx={{ ml: 1 }}>
+              {value.name}
+            </Box>
+          </>
+        );
+      },
+    },
+    {
+      field: "interview_round",
+      filterable: false,
+      flex: 2,
+      headerName: "Interview Round",
+      // eslint-disable-next-line arrow-body-style
+      renderCell: (params) => {
+        if (!params.value) {
+          return <EmptyCell />;
+        }
+
+        const value = params.value as string;
+
+        return (<span>{value}</span>);
+      },
+      sortable: false,
     },
     {
       field: "status",
@@ -86,6 +134,51 @@ export default function JobTrackerScreen() {
           />
         );
       },
+    },
+    {
+      field: "notes",
+      filterable: false,
+      flex: 1.5,
+      headerName: "",
+      // eslint-disable-next-line arrow-body-style
+      renderCell: (params) => {
+        const handleClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+          params.api.publishEvent("rowDoubleClick", params.api.getRowParams(params.id), event);
+        };
+
+        return (
+          <Box
+            sx={{
+              height: "100%",
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ButtonGroup
+              variant="outlined"
+            >
+              <Tooltip
+                arrow
+                title={params.value ? (
+                  <div style={{ whiteSpace: "pre-line" }}>
+                    {params.value}
+                  </div>
+                ) : null}
+              >
+                <IconButton>
+                  <InfoIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <IconButton onClick={handleClick}>
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </ButtonGroup>
+          </Box>
+        );
+      },
+      sortable: false,
     },
   ];
 

@@ -13,8 +13,9 @@ export interface FormFieldConfig {
   min_value?: number; // for numbers
   name: string;
   regex?: string;
+  related_model?: "Country";
   required: boolean;
-  type: "date" | "datetime" | "email" | "integer" | "string" | "text";
+  type: "date" | "datetime" | "email" | "integer" | "related" | "string" | "text";
   verbose_name: string;
 }
 
@@ -50,11 +51,27 @@ export interface PaginatedRequestQuery {
   sortModel?: GridSortModel;
 }
 
-export type ModelInstanceFieldValue = null | number | string;
+export interface CountryChoice {
+  id: number;
+  iso_3166_1_alpha_2_code: string;
+  iso_3166_1_alpha_3_code: string;
+  name: string;
+}
+
+export type ModelInstanceFieldValue = CountryChoice | null | number | string | undefined;
 
 export interface ModelInstance {
+  country?: CountryChoice;
   [key: string]: ModelInstanceFieldValue | ModelInstance;
 }
+
+export interface UserPreference {
+  ui_mode: "dark" | "light" | "system";
+}
+
+const SORT_FIELD_TRANSFORMATION_MAP: {[key: string]: string} = {
+  country: "country__name",
+};
 
 export function transformSortModelToQueryString(sortModel: GridSortModel | undefined): string {
   if (!sortModel || sortModel.length === 0) {
@@ -63,7 +80,7 @@ export function transformSortModelToQueryString(sortModel: GridSortModel | undef
 
   const orderingParams = sortModel.map((sort) => {
     const prefix = sort.sort === "desc" ? "-" : "";
-    return `${prefix}${sort.field}`;
+    return `${prefix}${SORT_FIELD_TRANSFORMATION_MAP[sort.field] || sort.field}`;
   });
 
   return `&ordering=${orderingParams.join(",")}`;
@@ -118,7 +135,7 @@ export const api = createApi({
    * Tag types must be defined in the original API definition
    * for any tags that would be provided by injected endpoints
    */
-  tagTypes: ["job-tracker", "user-profile"],
+  tagTypes: ["core", "job-tracker", "user-profile"],
   /**
    * This api has endpoints injected in adjacent files,
    * which is why no endpoints are shown below.

@@ -17,8 +17,10 @@ import {
   TypedUseMutation,
   TypedUseQuery,
 } from "@reduxjs/toolkit/query/react";
+import AsyncAutocomplete from "app/components/AsyncAutocomplete";
 import DatePicker from "app/components/DatePicker";
 import {
+  CountryChoice,
   FormFieldConfig,
   ModelConfig,
   ModelInstance,
@@ -91,6 +93,12 @@ const createYupSchema = (config: ModelConfig) => {
           );
         }
       }
+    } else if (field.type === "related") {
+      schema[field.name] = Yup.number().integer();
+
+      if (field.required) {
+        schema[field.name] = schema[field.name].required(`${field.verbose_name} is required`);
+      }
     }
     // Add more field types as needed
   });
@@ -115,7 +123,7 @@ function transformFormValuesForSubmission(values: FormValues): ModelInstance {
       acc[key] = value;
     } else if (typeof value === "string") {
       acc[key] = value;
-    } else if (value === undefined || value === null) {
+    } else if (typeof value === "undefined" || value === null) {
       acc[key] = null;
     } else if (moment.isMoment(value)) {
       acc[key] = value.format("YYYY-MM-DD");
@@ -153,7 +161,7 @@ function transformInstanceValuesForForm(
 
     switch (field.type) {
       case "date":
-        acc[key] = value ? moment(value) : null;
+        acc[key] = value ? moment(value as string) : null;
         break;
       case "email":
         acc[key] = (value || "") as string;
@@ -170,6 +178,11 @@ function transformInstanceValuesForForm(
             : null;
         } else {
           acc[key] = (value || "") as string;
+        }
+        break;
+      case "related":
+        if (field.related_model === "Country") {
+          acc[key] = value ? (value as CountryChoice).id : null;
         }
         break;
       default:
@@ -436,6 +449,31 @@ export default function EditFormDialog({
                                 variant="outlined"
                               />
                             )}
+                            value={values[field.name]}
+                          />
+                        )}
+                        {(field.type === "related" && field.related_model === "Country") && (
+                          <AsyncAutocomplete
+                            choiceModel={field.related_model}
+                            error={!!(touched[field.name] && errors[field.name])}
+                            fullWidth
+                            helperText={(
+                              touched[field.name] && errors[field.name]
+                                ? errors[field.name]
+                                : null
+                            )}
+                            inputId={`${field.name}-combo-box`}
+                            label={field.verbose_name}
+                            // onBlur={(event) => {
+                            //   const { value } = event.target;
+                            //   if (languageProficiencyLevelChoiceLabels.includes(value)) {
+                            //     setFieldValue('proficiency', value);
+                            //   }
+                            // }}
+                            onChange={(_, value) => {
+                              setFieldValue(field.name, value);
+                            }}
+                            required
                             value={values[field.name]}
                           />
                         )}
