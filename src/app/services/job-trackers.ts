@@ -1,12 +1,13 @@
-import { retry } from "@reduxjs/toolkit/query/react";
-
 import {
-  api,
   BulkDeleteResponse,
   ModelConfig,
   ModelInstance,
   PaginatedRequestQuery,
   PaginatedResponse,
+} from "types/apiTypes";
+
+import {
+  api,
   transformSortModelToQueryString,
 } from "./api";
 

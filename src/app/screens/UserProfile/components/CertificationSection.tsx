@@ -17,6 +17,7 @@ import React from "react";
 import * as Yup from "yup";
 
 import GenericSection from "./GenericSection";
+import { Certification } from "app/services/user-profiles";
 
 const Schema = Yup.object({
   description: Yup.string().notRequired(),
@@ -32,11 +33,15 @@ const defaultInitialValues = {
   title: "",
 };
 
-function CertificationSection({
+interface CertificationSectionProps {
+  isEditable: boolean;
+  records: Certification[];
+}
+
+export default function CertificationSection({
   isEditable,
-  syncCurrentUserData,
   records,
-}) {
+}: CertificationSectionProps) {
   const nothingToShow = !records.length;
 
   const transformPayload = (values) => {
@@ -289,5 +294,3 @@ function CertificationSection({
     </GenericSection>
   );
 }
-
-export default CertificationSection;

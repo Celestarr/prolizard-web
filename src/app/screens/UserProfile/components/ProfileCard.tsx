@@ -24,7 +24,6 @@ import {
 import AsyncAutocomplete from "app/components/AsyncAutocomplete";
 import DatePicker from "app/components/DatePicker";
 import DummyAvatarImage from "app/images/dummy-avatar.png";
-import APIService from "app/services/api";
 import cssImportantSuffixer from "app/utils/cssImportantSuffixer";
 import getHighestEducationObject from "app/utils/getHighestEducationObject";
 import getPreviousExperienceObject from "app/utils/getPreviousExperienceObject";
@@ -32,16 +31,21 @@ import isEmpty from "app/utils/isEmpty";
 import makeLocationString from "app/utils/makeLocationString";
 import makeUserHeadline from "app/utils/makeUserHeadline";
 import transformObject from "app/utils/transformObject";
-import { saveAs } from "file-saver";
-import { Formik } from "formik";
+import { Formik, FormikHelpers } from "formik";
 import snakeCase from "lodash/snakeCase";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import React, {
   useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
+import {
+  AcademicRecord,
+  ModelInstanceFieldValue,
+  UserProfile,
+  WorkExperience,
+} from "types/apiTypes";
 import * as Yup from "yup";
 
 const Schema = Yup.object({
@@ -50,27 +54,38 @@ const Schema = Yup.object({
   lastName: Yup.string().required("Last name is required"),
 });
 
-function ProfileCard({
+type FormFieldValue = Moment | ModelInstanceFieldValue | undefined;
+
+type FormValues = {
+  [key: string]: FormFieldValue;
+};
+
+interface ProfileCardProps {
+  editOnMount: boolean;
+  enqueueSnackbar: any;
+  isEditable: boolean;
+  user: UserProfile;
+}
+
+export default function ProfileCard({
   editOnMount,
   enqueueSnackbar,
   isEditable,
-  syncCurrentUserData,
   user,
-}) {
-  const [initialValues, setInitialValues] = useState(null);
-  const [userFullName, setUserFullName] = useState(null);
-  const [userLocation, setUserLocation] = useState(null);
-  const [username, setUserUsername] = useState(null);
-  const [userHeadline, setUserHeadline] = useState(null);
-  const [userPreviousExperience, setUserPreviousExperience] = useState(null);
-  const [userEducationHighlight, setUserEducationHighlight] = useState(null);
-  const [, setUserAbout] = useState(null);
+}: ProfileCardProps) {
+  const [initialValues, setInitialValues] = useState<null | FormValues>(null);
+  const [userFullName, setUserFullName] = useState<null | string>(null);
+  const [userLocation, setUserLocation] = useState<null | string>(null);
+  const [username, setUserUsername] = useState<null | string>(null);
+  const [userHeadline, setUserHeadline] = useState<null | string>(null);
+  const [userPreviousExperience, setUserPreviousExperience] = useState<null | WorkExperience>(null);
+  const [userEducationHighlight, setUserEducationHighlight] = useState<null | AcademicRecord>(null);
+  const [, setUserAbout] = useState<null | string>(null);
   const [isDialogLocked, setIsDialogLocked] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [resumeDownloadProgress, setResumeDownloadProgress] = useState(null);
   const [error, setError] = useState({ message: null, show: false });
   const [alertBoxMargin, setAlertBoxMargin] = useState(0);
-  const dialogContentRef = useRef(null);
+  const dialogContentRef = useRef<HTMLDivElement | null>(null);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -81,7 +96,7 @@ function ProfileCard({
       country: user.country ? user.country.id : null,
       date_of_birth: user.date_of_birth ? moment(user.date_of_birth) : null,
       firstName: user.first_name,
-      gender: user.gender ? user.gender.id : null,
+      gender: user.gender,
       lastName: user.last_name,
     });
 
@@ -93,10 +108,6 @@ function ProfileCard({
     setUserPreviousExperience(getPreviousExperienceObject(user.work_experiences));
     setUserEducationHighlight(getHighestEducationObject(user.academic_records));
   }, [user]);
-
-  const portfolioUrl = "//www.google.com"; // new URL(username, AppConfig.PORTFOLIO_HOST).href;
-
-  const isResumeDownloading = resumeDownloadProgress !== null;
 
   const handleAlertCollapseEnter = () => {
     setAlertBoxMargin(2);
@@ -122,7 +133,7 @@ function ProfileCard({
     setIsEditDialogOpen(true);
   };
 
-  const handleEditDialogSubmit = useCallback((values, { setSubmitting }) => {
+  const handleEditDialogSubmit = useCallback((values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
     setIsDialogLocked(true);
     handleErrorAlertClose();
 
@@ -167,24 +178,6 @@ function ProfileCard({
         setIsDialogLocked(false);
       });
   }, [initialValues]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleResumeDownloadClick = () => {
-    setResumeDownloadProgress(0);
-
-    APIService.User.retrieveUserResume(username, setResumeDownloadProgress)
-      .then((res) => {
-        const filename = `${userFullName}_resume`
-          .replace(/([^a-zA-Z0-9-_]+)/gi, "_");
-        saveAs(res, `${filename}.pdf`);
-        setResumeDownloadProgress(null);
-      })
-      .catch(() => {
-        enqueueSnackbar("Could not download résumé. Try again.", {
-          variant: "error",
-        });
-        setResumeDownloadProgress(null);
-      });
-  };
 
   useEffect(() => {
     if (editOnMount) {
@@ -330,28 +323,6 @@ function ProfileCard({
                 </Button>
               </Grid>
             )}
-            <Grid item>
-              <Button
-                color="primary"
-                href={portfolioUrl}
-                target="_blank"
-                variant={isEditable ? "outlined" : "contained"}
-                size="small"
-              >
-                View portfolio
-              </Button>
-            </Grid>
-            <Grid item>
-              <LoadingButton
-                color="primary"
-                loading={isResumeDownloading}
-                onClick={handleResumeDownloadClick}
-                variant="outlined"
-                size="small"
-              >
-                Download résumé
-              </LoadingButton>
-            </Grid>
           </Grid>
         </Container>
       </Grid>
@@ -388,10 +359,12 @@ function ProfileCard({
                 <Collapse
                   component={Box}
                   in={error.show}
-                  mb={alertBoxMargin}
                   onEntered={handleAlertCollapseEnter}
                   onExited={handleAlertCollapseExit}
-                  width="100%"
+                  sx={{
+                    mb: alertBoxMargin,
+                    width: "100%",
+                  }}
                 >
                   <Alert
                     onClose={handleErrorAlertClose}
@@ -460,20 +433,62 @@ function ProfileCard({
                   >
                     <FormControl fullWidth margin="normal">
                       <AsyncAutocomplete
+                        choiceModel={field.related_model}
+                        error={!!(touched[field.name] && errors[field.name])}
                         fullWidth
-                        id="gender-combo-box"
-                        fetchOptions={APIService.Common.retrieveGenders}
+                        helperText={(
+                          touched[field.name] && errors[field.name]
+                            ? errors[field.name]
+                            : null
+                        )}
+                        inputId={`${field.name}-combo-box`}
+                        label={field.verbose_name}
                         // onBlur={(event) => {
                         //   const { value } = event.target;
-                        //   if (genderChoiceValues.includes(value)) {
-                        //     setFieldValue('gender', value);
+                        //   if (languageProficiencyLevelChoiceLabels.includes(value)) {
+                        //     setFieldValue('proficiency', value);
                         //   }
                         // }}
                         onChange={(_, value) => {
-                          setFieldValue("gender", value);
+                          setFieldValue(field.name, value);
                         }}
-                        label="Gender"
-                        value={values.gender}
+                        required
+                        value={values[field.name]}
+                      />
+                      <Autocomplete
+                        autoFocus={row.row === 1 && !fieldIndex}
+                        disablePortal
+                        fullWidth
+                        isOptionEqualToValue={(opt, val) => {
+                          if (!val) {
+                            return false;
+                          }
+
+                          return (opt as AutocompleteValue).value === (val as AutocompleteValue).value;
+                        }}
+                        onBlur={handleBlur}
+                        onChange={(_, value) => {
+                          setFieldValue(field.name, value);
+                        }}
+                        options={field.choices.map((choice) => ({
+                          label: choice[1],
+                          value: choice[0],
+                        }))}
+                        renderInput={(params) => (
+                          <TextField
+                            // eslint-disable-next-line react/jsx-props-no-spreading
+                            {...params}
+                            id={field.name}
+                            error={!!(touched[field.name] && errors[field.name])}
+                            helperText={touched[field.name] && errors[field.name] ? errors[field.name] : null}
+                            label={field.verbose_name}
+                            margin="normal"
+                            name={field.name}
+                            required={field.required}
+                            variant="outlined"
+                          />
+                        )}
+                        value={values[field.name]}
                       />
                     </FormControl>
                   </Grid>
@@ -589,5 +604,3 @@ function ProfileCard({
     </>
   );
 }
-
-export default ProfileCard;

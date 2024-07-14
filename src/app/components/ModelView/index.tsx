@@ -24,13 +24,6 @@ import { TypedUseMutation, TypedUseQuery } from "@reduxjs/toolkit/query/react";
 import GlobalSpinner from "app/components/GlobalSpinner";
 import { currentUserSelector } from "app/reducers/selectors";
 import {
-  BulkDeleteResponse,
-  ModelConfig,
-  ModelInstance,
-  PaginatedRequestQuery,
-  PaginatedResponse,
-} from "app/services/api";
-import {
   useGetUserProfileByIdQuery,
 } from "app/services/user-profiles";
 import { debounce } from "lodash";
@@ -39,6 +32,13 @@ import React, {
 } from "react";
 import { Helmet } from "react-helmet-async";
 import { useSelector } from "react-redux";
+import {
+  BulkDeleteResponse,
+  ModelConfig,
+  ModelInstance,
+  PaginatedRequestQuery,
+  PaginatedResponse,
+} from "types/apiTypes";
 
 import DataTable from "./components/DataTable";
 import EditFormDialog from "./components/EditFormDialog";
@@ -206,12 +206,12 @@ export default function ModelView({
       <Helmet title={modelConfig.verbose_name} />
 
       <EditFormDialog
-        createModelInstance={createMutation}
+        createMutation={createMutation}
         getModelConfig={getModelConfigQuery}
         instanceValues={dialogInfo.selectedRow}
         isOpen={dialogInfo.isFormDialogOpen}
         onClose={closeFormDialog}
-        updateModelInstance={updateMutation}
+        updateMutation={updateMutation}
       />
 
       <RemoveConfirmationDialog

@@ -20,13 +20,6 @@ import {
 import AsyncAutocomplete from "app/components/AsyncAutocomplete";
 import DatePicker from "app/components/DatePicker";
 import {
-  CountryChoice,
-  FormFieldConfig,
-  ModelConfig,
-  ModelInstance,
-  ModelInstanceFieldValue,
-} from "app/services/api";
-import {
   Field,
   Form,
   Formik,
@@ -34,6 +27,13 @@ import {
 } from "formik";
 import moment, { Moment } from "moment";
 import React, { useEffect, useRef, useState } from "react";
+import {
+  Country,
+  FormFieldConfig,
+  ModelConfig,
+  ModelInstance,
+  ModelInstanceFieldValue,
+} from "types/apiTypes";
 import * as Yup from "yup";
 
 const createYupSchema = (config: ModelConfig) => {
@@ -182,7 +182,7 @@ function transformInstanceValuesForForm(
         break;
       case "related":
         if (field.related_model === "Country") {
-          acc[key] = value ? (value as CountryChoice).id : null;
+          acc[key] = value ? (value as Country).id : null;
         }
         break;
       default:
@@ -195,12 +195,12 @@ function transformInstanceValuesForForm(
 }
 
 interface EditFormDialogProps {
-  createModelInstance: TypedUseMutation<ModelInstance, Partial<ModelInstance>, any>;
+  createMutation: TypedUseMutation<ModelInstance, Partial<ModelInstance>, any>;
   getModelConfig: TypedUseQuery<ModelConfig, void, any>;
   instanceValues?: ModelInstance | null;
   isOpen: boolean;
   onClose: () => void;
-  updateModelInstance: TypedUseMutation<ModelInstance, Partial<ModelInstance>, any>;
+  updateMutation: TypedUseMutation<ModelInstance, Partial<ModelInstance>, any>;
 }
 
 function getFieldInitialValue(field: FormFieldConfig) {
@@ -216,12 +216,12 @@ function getFieldInitialValue(field: FormFieldConfig) {
 }
 
 export default function EditFormDialog({
-  createModelInstance,
+  createMutation,
   getModelConfig,
   instanceValues,
   isOpen,
   onClose,
-  updateModelInstance,
+  updateMutation,
 }: EditFormDialogProps) {
   const theme = useTheme();
   const {
@@ -229,8 +229,8 @@ export default function EditFormDialog({
     error: loadingError,
     isLoading,
   } = getModelConfig();
-  const [createItem] = createModelInstance();
-  const [updateItem] = updateModelInstance();
+  const [createItem] = createMutation();
+  const [updateItem] = updateMutation();
   const [isDialogLocked, setIsDialogLocked] = useState(false);
   const [error, setError] = useState({ message: null, show: false });
   const [alertBoxMargin, setAlertBoxMargin] = useState(0);

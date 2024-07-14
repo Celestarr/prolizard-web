@@ -7,11 +7,11 @@ import {
 import {
   TypedUseQuery,
 } from "@reduxjs/toolkit/query/react";
-import { CountryChoice, PaginatedResponse } from "app/services/api";
 import {
   useGetCountryChoicesQuery,
 } from "app/services/core";
 import React, { useEffect, useState } from "react";
+import { Country, PaginatedResponse } from "types/apiTypes";
 
 type ChoiceModel = "Country";
 
@@ -28,7 +28,7 @@ interface AsyncAutocompleteProps {
   value?: any;
 }
 
-const CHOICE_QUERY_MAP: {[key in ChoiceModel]: TypedUseQuery<PaginatedResponse<CountryChoice>, void, any>} = {
+const CHOICE_QUERY_MAP: {[key in ChoiceModel]: TypedUseQuery<PaginatedResponse<Country>, void, any>} = {
   Country: useGetCountryChoicesQuery,
 };
 

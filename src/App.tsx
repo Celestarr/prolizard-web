@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -9,9 +8,7 @@ import {
   useGetUserProfileByIdQuery,
 } from "app/services/user-profiles";
 import AppSettings from "app/settings";
-import { useAppDispatch, useTypedSelector } from "app/store";
 import themes from "app/styles/mui-theme";
-import { selectToken, setToken } from "features/auth/authSlice";
 import React, { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { hasAuthParams, useAuth } from "react-oidc-context";
@@ -52,7 +49,7 @@ export default function App() {
     return auth.events.addAccessTokenExpiring(() => {
       auth.signinSilent();
     });
-  }, [auth.events, auth.signinSilent]);
+  }, [auth]);
 
   useEffect(() => {
     if (user && user.preferences && user.preferences.ui_mode !== themeMode) {
@@ -62,7 +59,7 @@ export default function App() {
         setThemeMode(user.preferences.ui_mode);
       }
     }
-  }, [user]);
+  }, [prefersDarkMode, user, themeMode]);
 
   const theme = useMemo(
     () => themes[themeMode],

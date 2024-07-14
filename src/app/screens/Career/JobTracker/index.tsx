@@ -17,7 +17,6 @@ import {
 import { GridActionsCellItem, GridColDef, GridRowParams } from "@mui/x-data-grid";
 import EmptyCell from "app/components/EmptyCell";
 import ModelView from "app/components/ModelView";
-import { CountryChoice, ModelInstance } from "app/services/api";
 import {
   useBulkDeleteJobTrackerMutation,
   useCreateJobTrackerMutation,
@@ -26,6 +25,7 @@ import {
   useUpdateJobTrackerMutation,
 } from "app/services/job-trackers";
 import React, { JSX } from "react";
+import { Country, ModelInstance } from "types/apiTypes";
 
 const STATUS_COLOR_MAP: {
   [key: string]: "error" | "default" | "primary" | "secondary" | "info" | "success" | "warning"
@@ -86,7 +86,7 @@ export default function JobTrackerScreen() {
           return <EmptyCell />;
         }
 
-        const value = params.value as CountryChoice;
+        const value = params.value as Country;
 
         return (
           <>

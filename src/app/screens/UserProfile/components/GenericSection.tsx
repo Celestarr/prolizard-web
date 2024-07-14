@@ -2,6 +2,7 @@ import {
   Alert,
   Box,
   Button,
+  ButtonPropsColorOverrides,
   Collapse,
   Dialog,
   DialogActions,
@@ -12,27 +13,66 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Formik } from "formik";
-import React, { useEffect, useRef, useState } from "react";
+import { TypedUseMutation } from "@reduxjs/toolkit/query/react";
+import { GenericResponse, ModelInstance, ModelInstanceFieldValue } from "app/services/api";
+import { Formik, FormikHelpers } from "formik";
+import { Moment } from "moment";
+import React, {
+  JSX,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import * as Yup from "yup";
 
-function GenericSection({
+type ChildrenFunction = (props: {
+  setCurrentRecord: (record: any) => void;
+  setCurrentRemoveRecord: (record: any) => void;
+}) => React.ReactNode;
+
+interface GenericSectionProps {
+  children: ChildrenFunction;
+  createMutation: TypedUseMutation<ModelInstance, Partial<ModelInstance>, any>;
+  deleteMutation: TypedUseMutation<GenericResponse, number, any>;
+  formContent: any;
+  formSchema: Yup.Schema;
+  getFormInitialValues: (_addMode: any, _currentRecord: any) => any;
+  isModifiable: boolean;
+  modifyButtonColor: "inherit" | "primary" | "secondary" | "success" | "error" | "info" | "warning";
+  modifyButtonTitle: string;
+  nothingToShow: boolean;
+  sectionTitle: string;
+  sectionScope: string;
+  transformPayload: (_values: any) => any;
+  updateMutation: TypedUseMutation<ModelInstance, Partial<ModelInstance>, any>;
+}
+
+type FormFieldValue = Moment | ModelInstanceFieldValue | undefined;
+
+type FormValues = {
+  [key: string]: FormFieldValue;
+};
+
+export default function GenericSection({
   children,
+  createMutation,
+  deleteMutation,
+  formContent,
+  formSchema,
+  getFormInitialValues,
   isModifiable,
   modifyButtonColor,
   modifyButtonTitle,
   nothingToShow,
   sectionTitle,
-  createSvc,
-  deleteSvc,
-  updateSvc,
-  syncCurrentUserData,
-  formSchema,
-  getFormInitialValues,
-  formContent,
   sectionScope,
   transformPayload,
-}) {
+  updateMutation,
+}: GenericSectionProps) {
   const theme = useTheme();
+  const [createItem] = createMutation();
+  const [deleteItem] = deleteMutation();
+  const [updateItem] = updateMutation();
   const [currentRecord, setCurrentRecord] = useState(null);
   const [currentRemoveRecord, setCurrentRemoveRecord] = useState(null);
   const [isDialogLocked, setIsDialogLocked] = useState(false);
@@ -42,7 +82,7 @@ function GenericSection({
   const [isRemoving, setIsRemoving] = useState(false);
   const [error, setError] = useState({ message: null, show: false });
   const [alertBoxMargin, setAlertBoxMargin] = useState(0);
-  const dialogContentRef = useRef(null);
+  const dialogContentRef = useRef<HTMLDivElement | null>(null);
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
@@ -86,16 +126,15 @@ function GenericSection({
     setIsEditDialogOpen(true);
   };
 
-  const handleEditDialogSubmit = (values, { setSubmitting }) => {
+  const handleEditDialogSubmit = (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
     setIsDialogLocked(true);
     handleErrorAlertClose();
 
     const payload = transformPayload(values);
 
     if (currentRecord) {
-      updateSvc(currentRecord.id, payload)
+      createItem(payload)
         .then((res) => {
-          syncCurrentUserData(`${sectionScope}.update`, res);
           setSubmitting(false);
           setIsDialogLocked(false);
           setIsEditDialogOpen(false);
@@ -113,9 +152,8 @@ function GenericSection({
           setIsDialogLocked(false);
         });
     } else {
-      createSvc(payload)
+      updateItem(payload)
         .then((res) => {
-          syncCurrentUserData(`${sectionScope}.create`, res);
           setSubmitting(false);
           setIsDialogLocked(false);
           setIsEditDialogOpen(false);
@@ -148,9 +186,8 @@ function GenericSection({
     setIsRemoveDialogLocked(true);
     setIsRemoving(true);
 
-    deleteSvc(currentRemoveRecord.id)
+    deleteItem((currentRemoveRecord as unknown as { id: number }).id)
       .then(() => {
-        syncCurrentUserData(`${sectionScope}.delete`, currentRemoveRecord.id);
         setIsRemoving(false);
         setIsRemoveDialogLocked(false);
         setIsRemoveDialogOpen(false);
@@ -223,10 +260,12 @@ function GenericSection({
           <Collapse
             component={Box}
             in={error.show}
-            mb={alertBoxMargin}
             onEntered={handleAlertCollapseEnter}
             onExited={handleAlertCollapseExit}
-            width="100%"
+            sx={{
+              mb: alertBoxMargin,
+              width: "100%",
+            }}
           >
             <Alert
               onClose={handleErrorAlertClose}
@@ -318,5 +357,3 @@ function GenericSection({
     </>
   );
 }
-
-export default GenericSection;

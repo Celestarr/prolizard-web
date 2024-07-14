@@ -15,7 +15,7 @@ const CareerJobTrackerScreen = React.lazy(() => import("app/screens/Career/JobTr
 // const RMArticleSearchScreen = React.lazy(() =>
 // import("app/screens/ReferenceManagement/ArticleSearch"));
 // const AccountSettingsScreen = React.lazy(() => import("app/screens/Settings/screens/Account"));
-// const UserProfileScreen = React.lazy(() => import("app/screens/UserProfile"));
+const UserProfileScreen = React.lazy(() => import("app/screens/UserProfile"));
 
 const wrapLazyElement = (Element: React.LazyExoticComponent<() => JSX.Element | null>) => (
   <React.Suspense fallback={<GlobalSpinner />}>
@@ -67,7 +67,7 @@ export default function getRoutes(isLoggedIn: boolean) {
       //     },
       //   ],
       // },
-      // { path: Routes.USER_PROFILE, element: wrapLazyElement(UserProfileScreen) },
+      { path: Routes.USER_PROFILE, element: wrapLazyElement(UserProfileScreen) },
     ],
   }];
 }

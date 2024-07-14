@@ -11,8 +11,8 @@ import {
   GridRowSelectionModel,
   GridSortModel,
 } from "@mui/x-data-grid";
-import { ModelInstance, PaginatedResponse } from "app/services/api";
 import React, { useState } from "react";
+import { ModelInstance, PaginatedResponse } from "types/apiTypes";
 
 interface DataTableProps {
   columns: GridColDef<ModelInstance>[];
