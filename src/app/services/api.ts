@@ -45,7 +45,7 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-const baseQueryWithRetry = retry(baseQuery, { maxRetries: 2 });
+const baseQueryWithRetry = retry(baseQuery, { maxRetries: 0 });
 
 /**
  * Create a base API to inject endpoints into elsewhere.
@@ -70,7 +70,12 @@ export const api = createApi({
    * Tag types must be defined in the original API definition
    * for any tags that would be provided by injected endpoints
    */
-  tagTypes: ["core", "job-tracker", "user-profile"],
+  tagTypes: [
+    "core",
+    "job-tracker",
+    "reference-management",
+    "user-profile",
+  ],
   /**
    * This api has endpoints injected in adjacent files,
    * which is why no endpoints are shown below.

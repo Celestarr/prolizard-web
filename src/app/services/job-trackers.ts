@@ -14,7 +14,7 @@ import {
 const URL_PATH = "/career/job-trackers";
 const TAG = "job-tracker";
 
-export const jobTrackers = api.injectEndpoints({
+export const jobTrackerApi = api.injectEndpoints({
   endpoints: (build) => ({
     bulkDeleteJobTracker: build.mutation<BulkDeleteResponse, number[]>({
       query: (ids) => ({
@@ -87,7 +87,7 @@ export const {
   useGetJobTrackerModelConfigQuery,
   useGetJobTrackersQuery,
   useUpdateJobTrackerMutation,
-} = jobTrackers;
+} = jobTrackerApi;
 
 // export const {
 //   endpoints: { retrieveAll },

@@ -37,8 +37,6 @@ function ProfileSectionDivider() {
 }
 
 export default function UserProfileScreen() {
-  const { enqueueSnackbar } = useSnackbar();
-  // const theme = useTheme();
   const {
     data: user,
   } = useGetUserProfileByIdQuery("me");
@@ -53,13 +51,16 @@ export default function UserProfileScreen() {
   const [editOnMount, setEditOnMount] = useState(false);
   const location = useLocation();
 
+  const isMyProfile = user && userProfile ? user.id as number === userProfile.id as number : false;
+
   useEffect(() => {
     if (user && userProfile) {
-      setEditOnMount(!!qs.parse(location.search, { ignoreQueryPrefix: true }).edit);
+      setIsEditable(isMyProfile);
+      setEditOnMount(isMyProfile ? !!qs.parse(location.search, { ignoreQueryPrefix: true }).edit : false);
     }
-  }, [location, user, userProfile]);
+  }, [isMyProfile, location, user, userProfile]);
 
-  if (!user) {
+  if (!user || !userProfile) {
     return <GlobalSpinner />;
   }
 
@@ -67,7 +68,7 @@ export default function UserProfileScreen() {
     return <div>Error</div>;
   }
 
-  const data = userProfile || user;
+  const data = isMyProfile ? user : userProfile;
 
   const userFullName = `${data.first_name} ${data.last_name}`;
 
@@ -80,7 +81,6 @@ export default function UserProfileScreen() {
 
       <ProfileCard
         editOnMount={editOnMount}
-        enqueueSnackbar={enqueueSnackbar}
         isEditable={isEditable}
         user={data}
       />
@@ -105,63 +105,54 @@ export default function UserProfileScreen() {
               <Paper sx={{ paddingX: 4, paddingY: 4 }}>
                 <WorkExperienceSection
                   isEditable={isEditable}
-                  records={data.work_experiences}
                 />
 
                 <ProfileSectionDivider />
 
                 <AcademicRecordSection
                   isEditable={isEditable}
-                  records={data.academic_records}
                 />
 
                 <ProfileSectionDivider />
 
                 <SkillSection
                   isEditable={isEditable}
-                  records={data.skills}
                 />
 
                 <ProfileSectionDivider />
 
                 <LanguageSection
                   isEditable={isEditable}
-                  records={data.languages}
                 />
 
                 <ProfileSectionDivider />
 
                 <ProjectSection
                   isEditable={isEditable}
-                  records={data.projects}
                 />
 
                 <ProfileSectionDivider />
 
                 <PublicationSection
                   isEditable={isEditable}
-                  records={data.publications}
                 />
 
                 <ProfileSectionDivider />
 
                 <HonorOrAwardSection
                   isEditable={isEditable}
-                  records={data.honors_or_awards}
                 />
 
                 <ProfileSectionDivider />
 
                 <CertificationSection
                   isEditable={isEditable}
-                  records={data.certifications}
                 />
 
                 <ProfileSectionDivider />
 
                 <WebLinkSection
                   isEditable={isEditable}
-                  records={data.web_links}
                 />
               </Paper>
             </Grid>

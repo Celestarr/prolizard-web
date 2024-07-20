@@ -12,8 +12,7 @@ const CareerJobTrackerScreen = React.lazy(() => import("app/screens/Career/JobTr
 // const PreferenceSettingsScreen = React.lazy(
 //   () => import("app/screens/Settings/screens/Preferences"),
 // );
-// const RMArticleSearchScreen = React.lazy(() =>
-// import("app/screens/ReferenceManagement/ArticleSearch"));
+const RMArticleSearchScreen = React.lazy(() => import("app/screens/ReferenceManagement/ArticleSearch"));
 // const AccountSettingsScreen = React.lazy(() => import("app/screens/Settings/screens/Account"));
 const UserProfileScreen = React.lazy(() => import("app/screens/UserProfile"));
 
@@ -47,14 +46,14 @@ export default function getRoutes(isLoggedIn: boolean) {
           { path: Routes.CAREER_JOB_TRACKER, element: wrapLazyElement(CareerJobTrackerScreen) },
         ],
       },
-      // { // /rm
-      //   path: Routes.RM,
-      //   element: null,
-      //   children: [
-      //     { path: Routes.RM, element: <Navigate to={Routes.RM_ARTICLE_SEARCH} /> },
-      //     { path: Routes.RM_ARTICLE_SEARCH, element: wrapLazyElement(RMArticleSearchScreen) },
-      //   ],
-      // },
+      { // /rm
+        path: Routes.RM,
+        element: null,
+        children: [
+          { path: Routes.RM, element: <Navigate to={Routes.RM_ARTICLE_SEARCH} /> },
+          { path: Routes.RM_ARTICLE_SEARCH, element: wrapLazyElement(RMArticleSearchScreen) },
+        ],
+      },
       // { // /settings
       //   path: Routes.SETTINGS,
       //   element: wrapLazyElement(SettingsScreen),

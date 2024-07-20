@@ -52,11 +52,16 @@ export default function App() {
   }, [auth]);
 
   useEffect(() => {
-    if (user && user.preferences && user.preferences.ui_mode !== themeMode) {
-      if (user.preferences.ui_mode === "system") {
-        setThemeMode(prefersDarkMode ? "dark" : "light");
-      } else {
-        setThemeMode(user.preferences.ui_mode);
+    if (user && user.preferences) {
+      const userUiMode: "dark" | "light" | "system" = user.preferences.ui_mode.toLowerCase() as (
+        "dark" | "light" | "system"
+      );
+      if (userUiMode !== themeMode) {
+        if (userUiMode === "system") {
+          setThemeMode(prefersDarkMode ? "dark" : "light");
+        } else {
+          setThemeMode(userUiMode);
+        }
       }
     }
   }, [prefersDarkMode, user, themeMode]);

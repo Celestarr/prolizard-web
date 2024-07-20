@@ -66,7 +66,7 @@ export interface ModelConfig {
 export type ModelInstanceFieldValue = Country | null | number | string | undefined;
 
 export interface ModelInstance {
-  country?: Country;
+  country?: Country | null;
   [key: string]: ModelInstanceFieldValue | ModelInstance;
 }
 

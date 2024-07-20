@@ -212,7 +212,10 @@ export default function ProfileSectionModelView({
         selectedCount={selectionModel.length}
       />
 
-      <Box>
+      <Grid
+        item
+        md={12}
+      >
         <Box
           alignItems="center"
           display="flex"
@@ -251,7 +254,7 @@ export default function ProfileSectionModelView({
             onRemove: openRemoveConfirmationDialog,
           })
         )}
-      </Box>
+      </Grid>
     </Grid>
   );
 }

@@ -42,16 +42,8 @@ const createYupSchema = (config: ModelConfig) => {
   config.fields.forEach((field) => {
     if (field.type === "email") {
       schema[field.name] = Yup.string().email("Invalid email address");
-
-      if (field.required) {
-        schema[field.name] = schema[field.name].required(`${field.verbose_name} is required`);
-      }
     } else if (field.type === "integer") {
       schema[field.name] = Yup.number().integer();
-
-      if (field.required) {
-        schema[field.name] = schema[field.name].required(`${field.verbose_name} is required`);
-      }
 
       if (field.max_length) {
         schema[field.name] = schema[field.name].max(
@@ -75,10 +67,6 @@ const createYupSchema = (config: ModelConfig) => {
       } else {
         schema[field.name] = Yup.string();
 
-        if (field.required) {
-          schema[field.name] = schema[field.name].required(`${field.verbose_name} is required`);
-        }
-
         if (field.max_length) {
           schema[field.name] = schema[field.name].max(
             field.max_length,
@@ -95,12 +83,16 @@ const createYupSchema = (config: ModelConfig) => {
       }
     } else if (field.type === "related") {
       schema[field.name] = Yup.number().integer();
+    }
 
+    // Common for all fields
+    if (schema[field.name]) {
       if (field.required) {
         schema[field.name] = schema[field.name].required(`${field.verbose_name} is required`);
+      } else {
+        schema[field.name] = schema[field.name].nullable(true);
       }
     }
-    // Add more field types as needed
   });
 
   return Yup.object().shape(schema);
@@ -272,6 +264,7 @@ export default function EditFormDialog({
   };
 
   const handleFormSubmit = (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
+    setError({ message: null, show: false });
     setIsDialogLocked(true);
 
     const transformedValues = transformFormValuesForSubmission(values);
@@ -288,7 +281,7 @@ export default function EditFormDialog({
         }
       })
       .catch((err) => {
-        setError({ message: err.message, show: true });
+        setError({ message: err?.data?.message, show: true });
         setIsDialogLocked(false);
         setSubmitting(false);
       });
@@ -473,7 +466,7 @@ export default function EditFormDialog({
                             onChange={(_, value) => {
                               setFieldValue(field.name, value);
                             }}
-                            required
+                            required={field.required}
                             value={values[field.name]}
                           />
                         )}

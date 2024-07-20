@@ -1,79 +1,48 @@
-/* eslint-disable react/jsx-props-no-spreading */
-
-import LoadingButton from "@mui/lab/LoadingButton";
 import {
-  Alert,
   Avatar,
-  Box,
   Button,
-  Collapse,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Divider,
-  FormControl,
   Grid,
   Paper,
-  TextField,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import AsyncAutocomplete from "app/components/AsyncAutocomplete";
-import DatePicker from "app/components/DatePicker";
+import EditFormDialog from "app/components/ModelView/components/EditFormDialog";
 import DummyAvatarImage from "app/images/dummy-avatar.png";
+import {
+  useGetUserProfileModelConfigQuery,
+  useUpdateUserProfileMutation,
+} from "app/services/user-profiles";
 import cssImportantSuffixer from "app/utils/cssImportantSuffixer";
 import getHighestEducationObject from "app/utils/getHighestEducationObject";
 import getPreviousExperienceObject from "app/utils/getPreviousExperienceObject";
-import isEmpty from "app/utils/isEmpty";
 import makeLocationString from "app/utils/makeLocationString";
 import makeUserHeadline from "app/utils/makeUserHeadline";
-import transformObject from "app/utils/transformObject";
-import { Formik, FormikHelpers } from "formik";
-import snakeCase from "lodash/snakeCase";
 import moment, { Moment } from "moment";
 import React, {
-  useCallback,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import {
   AcademicRecord,
-  ModelInstanceFieldValue,
+  ModelInstance,
   UserProfile,
   WorkExperience,
 } from "types/apiTypes";
-import * as Yup from "yup";
-
-const Schema = Yup.object({
-  date_of_birth: Yup.date().nullable(),
-  firstName: Yup.string().required("First name is required"),
-  lastName: Yup.string().required("Last name is required"),
-});
-
-type FormFieldValue = Moment | ModelInstanceFieldValue | undefined;
-
-type FormValues = {
-  [key: string]: FormFieldValue;
-};
 
 interface ProfileCardProps {
   editOnMount: boolean;
-  enqueueSnackbar: any;
   isEditable: boolean;
   user: UserProfile;
 }
 
 export default function ProfileCard({
   editOnMount,
-  enqueueSnackbar,
   isEditable,
   user,
 }: ProfileCardProps) {
-  const [initialValues, setInitialValues] = useState<null | FormValues>(null);
   const [userFullName, setUserFullName] = useState<null | string>(null);
   const [userLocation, setUserLocation] = useState<null | string>(null);
   const [username, setUserUsername] = useState<null | string>(null);
@@ -81,25 +50,17 @@ export default function ProfileCard({
   const [userPreviousExperience, setUserPreviousExperience] = useState<null | WorkExperience>(null);
   const [userEducationHighlight, setUserEducationHighlight] = useState<null | AcademicRecord>(null);
   const [, setUserAbout] = useState<null | string>(null);
-  const [isDialogLocked, setIsDialogLocked] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [error, setError] = useState({ message: null, show: false });
-  const [alertBoxMargin, setAlertBoxMargin] = useState(0);
-  const dialogContentRef = useRef<HTMLDivElement | null>(null);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [dialogInfo, setDialogInfo] = useState<{
+    selectedRow: ModelInstance | null;
+    isFormDialogOpen: boolean;
+  }>({
+    selectedRow: null,
+    isFormDialogOpen: false,
+  });
 
   useEffect(() => {
-    setInitialValues({
-      about: user.about || "",
-      address: user.address || "",
-      country: user.country ? user.country.id : null,
-      date_of_birth: user.date_of_birth ? moment(user.date_of_birth) : null,
-      firstName: user.first_name,
-      gender: user.gender,
-      lastName: user.last_name,
-    });
-
     setUserUsername(user.username);
     setUserAbout(user.about);
     setUserFullName(`${user.first_name} ${user.last_name}`);
@@ -109,75 +70,12 @@ export default function ProfileCard({
     setUserEducationHighlight(getHighestEducationObject(user.academic_records));
   }, [user]);
 
-  const handleAlertCollapseEnter = () => {
-    setAlertBoxMargin(2);
-  };
-
-  const handleAlertCollapseExit = () => {
-    setAlertBoxMargin(0);
-  };
-
-  const handleErrorAlertClose = () => {
-    setError({ ...error, show: false });
-    setAlertBoxMargin(0);
-  };
-
-  const handleEditDialogClose = () => {
-    if (!isDialogLocked) {
-      handleErrorAlertClose();
-      setIsEditDialogOpen(false);
-    }
-  };
-
   const handleEditDialogOpen = () => {
-    setIsEditDialogOpen(true);
-  };
-
-  const handleEditDialogSubmit = useCallback((values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
-    setIsDialogLocked(true);
-    handleErrorAlertClose();
-
-    const payload = {};
-
-    [
-      "about",
-      "address",
-      "country",
-      "firstName",
-      "gender",
-      "lastName",
-    ].forEach((fieldName) => {
-      const snaked = snakeCase(fieldName);
-      if (initialValues[fieldName] !== values[fieldName]) {
-        payload[snaked] = !isEmpty(values[fieldName]) ? values[fieldName] : null;
-      }
+    setDialogInfo({
+      isFormDialogOpen: true,
+      selectedRow: user as unknown as ModelInstance,
     });
-
-    if (initialValues.date_of_birth !== values.date_of_birth) {
-      payload.date_of_birth = !isEmpty(values.date_of_birth) ? values.date_of_birth.format("YYYY-MM-DD") : null;
-    }
-
-    APIService.User.updateCurrentUserProfile(payload)
-      .then((res) => {
-        syncCurrentUserData("profile", transformObject(res, {
-          includeKeys: Object.keys(payload),
-        }));
-        setSubmitting(false);
-        setIsDialogLocked(false);
-        setIsEditDialogOpen(false);
-      })
-      .catch((err) => {
-        setError({ message: err.message, show: true });
-        if (dialogContentRef.current) {
-          dialogContentRef.current.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
-        }
-        setSubmitting(false);
-        setIsDialogLocked(false);
-      });
-  }, [initialValues]); // eslint-disable-line react-hooks/exhaustive-deps
+  };
 
   useEffect(() => {
     if (editOnMount) {
@@ -185,9 +83,12 @@ export default function ProfileCard({
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!user) {
-    return null;
-  }
+  const closeFormDialog = () => {
+    setDialogInfo({
+      isFormDialogOpen: false,
+      selectedRow: null,
+    });
+  };
 
   return (
     <>
@@ -327,280 +228,14 @@ export default function ProfileCard({
         </Container>
       </Grid>
 
-      <Dialog
-        aria-labelledby="edit-profile-dialog"
-        disableRestoreFocus
-        fullScreen={fullScreen}
-        fullWidth
-        maxWidth="sm"
-        onClose={handleEditDialogClose}
-        open={isEditDialogOpen}
-      >
-        <Formik
-          enableReinitialize
-          initialValues={initialValues}
-          onSubmit={handleEditDialogSubmit}
-          validationSchema={Schema}
-        >
-          {({
-            errors,
-            handleBlur,
-            handleChange,
-            handleSubmit,
-            isSubmitting,
-            setFieldTouched,
-            setFieldValue,
-            touched,
-            values,
-          }) => (
-            <form className="mui-dialog-form" onSubmit={handleSubmit}>
-              <DialogTitle id="edit-profile-dialog">Edit Profile</DialogTitle>
-              <DialogContent ref={dialogContentRef}>
-                <Collapse
-                  component={Box}
-                  in={error.show}
-                  onEntered={handleAlertCollapseEnter}
-                  onExited={handleAlertCollapseExit}
-                  sx={{
-                    mb: alertBoxMargin,
-                    width: "100%",
-                  }}
-                >
-                  <Alert
-                    onClose={handleErrorAlertClose}
-                    severity="error"
-                  >
-                    {error.message}
-                  </Alert>
-                </Collapse>
-                <Grid
-                  container
-                  spacing={4}
-                >
-                  <Grid
-                    item
-                    md={6}
-                  >
-                    <TextField
-                      variant="outlined"
-                      margin="normal"
-                      required
-                      fullWidth
-                      id="firstName"
-                      label="First Name"
-                      name="firstName"
-                      autoComplete="given-name"
-                      autoFocus
-                      value={values.firstName}
-                      error={!!(touched.firstName && errors.firstName)}
-                      InputProps={{
-                        onBlur: handleBlur,
-                        onChange: handleChange,
-                      }}
-                      helperText={touched.firstName && errors.firstName ? errors.firstName : null}
-                    />
-                  </Grid>
-                  <Grid
-                    item
-                    md={6}
-                  >
-                    <TextField
-                      variant="outlined"
-                      margin="normal"
-                      required
-                      fullWidth
-                      id="lastName"
-                      label="Last Name"
-                      name="lastName"
-                      autoComplete="family-name"
-                      value={values.lastName}
-                      error={!!(touched.lastName && errors.lastName)}
-                      InputProps={{
-                        onBlur: handleBlur,
-                        onChange: handleChange,
-                      }}
-                      helperText={touched.lastName && errors.lastName ? errors.lastName : null}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid
-                  container
-                  spacing={4}
-                >
-                  <Grid
-                    item
-                    md={6}
-                  >
-                    <FormControl fullWidth margin="normal">
-                      <AsyncAutocomplete
-                        choiceModel={field.related_model}
-                        error={!!(touched[field.name] && errors[field.name])}
-                        fullWidth
-                        helperText={(
-                          touched[field.name] && errors[field.name]
-                            ? errors[field.name]
-                            : null
-                        )}
-                        inputId={`${field.name}-combo-box`}
-                        label={field.verbose_name}
-                        // onBlur={(event) => {
-                        //   const { value } = event.target;
-                        //   if (languageProficiencyLevelChoiceLabels.includes(value)) {
-                        //     setFieldValue('proficiency', value);
-                        //   }
-                        // }}
-                        onChange={(_, value) => {
-                          setFieldValue(field.name, value);
-                        }}
-                        required
-                        value={values[field.name]}
-                      />
-                      <Autocomplete
-                        autoFocus={row.row === 1 && !fieldIndex}
-                        disablePortal
-                        fullWidth
-                        isOptionEqualToValue={(opt, val) => {
-                          if (!val) {
-                            return false;
-                          }
-
-                          return (opt as AutocompleteValue).value === (val as AutocompleteValue).value;
-                        }}
-                        onBlur={handleBlur}
-                        onChange={(_, value) => {
-                          setFieldValue(field.name, value);
-                        }}
-                        options={field.choices.map((choice) => ({
-                          label: choice[1],
-                          value: choice[0],
-                        }))}
-                        renderInput={(params) => (
-                          <TextField
-                            // eslint-disable-next-line react/jsx-props-no-spreading
-                            {...params}
-                            id={field.name}
-                            error={!!(touched[field.name] && errors[field.name])}
-                            helperText={touched[field.name] && errors[field.name] ? errors[field.name] : null}
-                            label={field.verbose_name}
-                            margin="normal"
-                            name={field.name}
-                            required={field.required}
-                            variant="outlined"
-                          />
-                        )}
-                        value={values[field.name]}
-                      />
-                    </FormControl>
-                  </Grid>
-                  <Grid
-                    item
-                    md={6}
-                  >
-                    <DatePicker
-                      id="dob-picker"
-                      label="Date of Birth"
-                      error={!!(touched.date_of_birth && errors.date_of_birth)}
-                      helperText={touched.date_of_birth && errors.date_of_birth ? errors.date_of_birth : null}
-                      onBlur={() => {
-                        setFieldTouched("date_of_birth", true);
-                      }}
-                      onChange={(date) => {
-                        setFieldValue("date_of_birth", date);
-                      }}
-                      value={values.date_of_birth}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid
-                  container
-                  spacing={4}
-                >
-                  <Grid
-                    item
-                    md={6}
-                  >
-                    <TextField
-                      variant="outlined"
-                      margin="normal"
-                      fullWidth
-                      id="address"
-                      label="Address"
-                      name="address"
-                      autoComplete="street-address"
-                      value={values.address}
-                      error={!!(touched.address && errors.address)}
-                      InputProps={{
-                        onBlur: handleBlur,
-                        onChange: handleChange,
-                      }}
-                      helperText={touched.address && errors.address ? errors.address : null}
-                    />
-                  </Grid>
-                  <Grid
-                    item
-                    md={6}
-                  >
-                    <FormControl fullWidth margin="normal">
-                      <AsyncAutocomplete
-                        fullWidth
-                        inputId="country-combo-box"
-                        fetchOptions={APIService.Common.retrieveCountries}
-                        // onBlur={(event) => {
-                        //   const { value } = event.target;
-                        //   // if (countryChoiceValues.includes(value)) {
-                        //   setFieldValue('country', value);
-                        //   // }
-                        // }}
-                        onChange={(_, value) => {
-                          setFieldValue("country", value);
-                        }}
-                        label="Country"
-                        value={values.country}
-                      />
-                    </FormControl>
-                  </Grid>
-                </Grid>
-                <Grid
-                  container
-                  spacing={4}
-                >
-                  <Grid
-                    item
-                    md={12}
-                  >
-                    <TextField
-                      autoComplete="off"
-                      error={!!(touched.about && errors.about)}
-                      fullWidth
-                      helperText={touched.about && errors.about ? errors.about : null}
-                      id="about"
-                      InputProps={{
-                        onBlur: handleBlur,
-                        onChange: handleChange,
-                      }}
-                      label="Professional Summary"
-                      margin="normal"
-                      multiline
-                      name="about"
-                      rows={4}
-                      value={values.about}
-                      variant="outlined"
-                    />
-                  </Grid>
-                </Grid>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleEditDialogClose}>
-                  Cancel
-                </Button>
-                <Button color="primary" disabled={isSubmitting} type="submit">
-                  Submit
-                </Button>
-              </DialogActions>
-            </form>
-          )}
-        </Formik>
-      </Dialog>
+      <EditFormDialog
+        createMutation={useUpdateUserProfileMutation}
+        getModelConfig={useGetUserProfileModelConfigQuery}
+        instanceValues={dialogInfo.selectedRow}
+        isOpen={dialogInfo.isFormDialogOpen}
+        onClose={closeFormDialog}
+        updateMutation={useUpdateUserProfileMutation}
+      />
     </>
   );
 }
