@@ -1,4 +1,5 @@
 import {
+  ArticleSearchRequestQuery,
   BulkDeleteResponse,
   ModelConfig,
   ModelInstance,
@@ -16,16 +17,22 @@ const TAG = "reference-management";
 
 export const referenceManagementApi = api.injectEndpoints({
   endpoints: (build) => ({
-    searchArticles: build.query<PaginatedResponse<ModelInstance>, Partial<PaginatedRequestQuery>>({
+    searchArticles: build.query<PaginatedResponse<ModelInstance>, Partial<ArticleSearchRequestQuery>>({
       query: ({
         page,
         query,
+        sorting,
         sortModel,
+        yearMax,
+        yearMin,
       }) => ({
         url: (
           `${URL_PATH}/articles/search?page=${page as number + 1}`
           + `${transformSortModelToQueryString(sortModel)}`
           + `${query ? `&query=${query}` : ""}`
+          + `${sorting ? `&sorting=${sorting}` : ""}`
+          + `${yearMax ? `&year_max=${yearMax}` : ""}`
+          + `${yearMin ? `&year_min=${yearMin}` : ""}`
         ),
       }),
       providesTags: (result) => (typeof result !== "undefined" ? [

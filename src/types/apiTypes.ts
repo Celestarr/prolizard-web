@@ -84,6 +84,12 @@ export interface PaginatedRequestQuery {
   sortModel?: GridSortModel;
 }
 
+export interface ArticleSearchRequestQuery extends PaginatedRequestQuery {
+  sorting: string;
+  yearMax: number;
+  yearMin: number;
+}
+
 export interface Project {
   id: number;
 }
